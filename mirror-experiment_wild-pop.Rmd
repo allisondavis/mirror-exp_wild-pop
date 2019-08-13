@@ -9,16 +9,41 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Self inspection/ Mirror experiment
+
+## Overview/Purpose
+#### *Purpose*
+  Bilateral vision allows organisms to specialize their vision/visual tasks in order to perform more efficiently. Fish use their bilateral vision to more effeciently shoal/school, inspect predators, find food, and mate. In addition to aiding in each individual task, lateralization can help multitask (e.g. feed and watch for predators). 
+  The self inspection/mirror experiment test which visual field (left or right) fish prefer to use in the identification/assessment of a **conspecific.** Here we not only tested for difference in preference, but differences in the amount of variation between sexual sailfin mollies and asexual amazon mollies.
+
+#### *General Methods*
+  Used two tanks (arbitrarily labled A and B). Long walls of both tanks had acrylic mirror; short walls had white corrugated poster board. Fish were placed in tank for 5min acclimation followed by a 10min swim period, in which we recorded their visual use. 
+  Occurances of left or right visual use were determined by scoring every 2sec of video, starting at second 10 and ending at minute 10. This gave 296 occurance values (left, right, or NA for no direct lateralized use). Preference scores calculated as: left/(left+right). 
+
 ## Data collection
+
+  * raw data: occurance number and preference score for each individual fish (left, right, NA)
+  * pref data: preference scores for tank A, B, combo of A and B, and average of A and B
+      - combo score determined as left/(left+right) for total left and right occurances
+      - average score determined by averaging tank A pref score and tank B pref score
 
 ```{r}
 library(curl)
 
 raw <- curl("https://raw.githubusercontent.com/allisondavis/mirror-exp_wild-pop/master/adavis_mirror-exp_wild-pop_raw.csv")
 
+raw <- read.csv(raw, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+
 pref <- curl("https://raw.githubusercontent.com/allisondavis/mirror-exp_wild-pop/master/adavis_mirror-exp_wild-pop_pref-scores.csv")
+
+pref <- read.csv(pref, header = TRUE, sep = ",", stringsAsFactors = TRUE)
 
 head(raw)
 head(pref)
 
 ```
+
+## Tank differences
+
+  * here I look at the variance in preference scores between tank A and tank B to see if there are any tank effects
+  
