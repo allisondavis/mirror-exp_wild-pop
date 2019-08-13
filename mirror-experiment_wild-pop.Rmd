@@ -19,6 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 #### *General Methods*
   Used two tanks (arbitrarily labled A and B). Long walls of both tanks had acrylic mirror; short walls had white corrugated poster board. Fish were placed in tank for 5min acclimation followed by a 10min swim period, in which we recorded their visual use. 
   Occurances of left or right visual use were determined by scoring every 2sec of video, starting at second 10 and ending at minute 10. This gave 296 occurance values (left, right, or NA for no direct lateralized use). Preference scores calculated as: left/(left+right). 
+  A total of 16 Amazon mollies (P. form) and 13 sailfin mollies (P. lat) went through this experiment. *[as of 13 August 2019]*
 
 ## Data collection
 
@@ -41,9 +42,70 @@ pref <- read.csv(pref, header = TRUE, sep = ",", stringsAsFactors = TRUE)
 head(raw)
 head(pref)
 
+#will be focusing on preference scores, so I will separate out the sexual vs asexual only in pref
+
+p_form <- pref[pref$X.U.FEFF.SPP== "P.form",]
+head(p_form)
+
+p_lat <- pref[pref$X.U.FEFF.SPP== "P.lat",]
+head(p_lat)
+
+
 ```
 
-## Tank differences
+## Analyses
 
-  * here I look at the variance in preference scores between tank A and tank B to see if there are any tank effects
+#### Tank differences
+
+  * Here I look at the variance in preference scores between tank A and tank B to see if there are any tank effects. 
+  
+```{r}
+(vA_lat <- var(p_lat$A.PROP))
+(vB_lat <- var(p_lat$B.PROP))
+#variances unequal, confirming welch's two-sample t
+
+t.test(p_lat$A.PROP, p_lat$B.PROP)
+
+(vA_form <- var(p_form$A.PROP))
+(vB_form <- var(p_form$B.PROP))
+#variances unequal, confirming welche's two-sample t
+
+t.test(p_form$A.PROP, p_form$B.PROP)
+```
+
+#### Combo vs average
+  * I will also test if there is a significant difference in using the combo score vs the averaged score
+
+```{r}
+
+t.test(p_lat$TOT.PROP, p_lat$AVG.PROP)
+
+t.test(p_form$TOT.PROP, p_form$AVG.PROP)
+
+#nope! Appear to be pretty much the same. 
+
+```
+
+#### Eye preference for each species
+  * I will look at each species individually to see if they preferencially use their left or right visual field for conspecific/self inspection.
+
+```{r}
+#mu is assumed to be 0.5, meaning no eye preference. One-sampled t-test will determine significant deviation from this mean.
+
+t.test(p_lat$TOT.PROP, mu=0.5, alternative = "two.sided")
+
+t.test(p_form$TOT.PROP, mu=0.5, alternative = "two.sided")
+
+```
+***NOT SURE HOW TO INTERPRET OR IF THIS IS EVEN THE CORRECT WAY TO TEST? SEE PAPER***
+
+#### Asex vs Sex
+  * I will compare the combo score between asexuals (P.form) and sexuals (P.lat) to see how similar/different their eye preference variation is. 
+
+```{r}
+#NOT SURE IF T TEST IS RIGHT HERE; WILL IT JUST COMPARE MEANS AND NOT VARIANCES?
+
+t.test(p_lat$TOT.PROP, p_form$TOT.PROP)
+
+```
   
