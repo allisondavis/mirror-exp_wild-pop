@@ -1,0 +1,17 @@
+---
+title: "mirror-experiment_wild-pop"
+author: "Allison Davis"
+date: "August 13, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data collection
+
+```{r}
+library(curl)
+
+```
