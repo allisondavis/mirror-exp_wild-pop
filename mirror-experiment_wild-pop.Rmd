@@ -14,4 +14,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(curl)
 
+raw <- curl("https://raw.githubusercontent.com/allisondavis/mirror-exp_wild-pop/master/adavis_mirror-exp_wild-pop_raw.csv")
+
+pref <- curl("https://raw.githubusercontent.com/allisondavis/mirror-exp_wild-pop/master/adavis_mirror-exp_wild-pop_pref-scores.csv")
+
+head(raw)
+head(pref)
+
 ```
