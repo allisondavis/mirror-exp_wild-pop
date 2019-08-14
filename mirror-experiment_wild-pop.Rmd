@@ -107,15 +107,17 @@ t.test(p_form$TOT.PROP, mu=0.5, alternative = "two.sided")
 hist(p_lat$TOT.PROP)
 hist(p_form$TOT.PROP)
 ```
-    - Histogram shows that values aren't normally distributed; p_form shows an outlier ***(should I do analyses with and without it?)***
+   
+   - Histogram shows that values aren't normally distributed; p_form shows an outlier ***(should I do analyses with and without it?)***
 
 ```{r}
 
 t.test(p_lat$TOT.PROP, p_form$TOT.PROP)
 ```
-    - T test may not be correct test, as it compares means and not variances. Still, not significant differences. 
+  
+   - T test may not be correct test, as it compares means and not variances. Still, not significant differences. 
 
-    - Will now do F-test: this will compare the variances of the two data sets.
+   - Will now do F-test: this will compare the variances of the two data sets.
 
 ```{r}
 #two-sided is predicting that the variances could be either greater or less
@@ -128,7 +130,8 @@ var.test(p_lat$TOT.PROP, p_form$TOT.PROP, alternative = "greater")
 var.test(p_lat$TOT.PROP, p_form$TOT.PROP, alternative = "less")
 
 ```
-    - none show anything significant. 
+   
+   - none show anything significant. 
     
   * Will do an arcsine transformation of data to create a more normal distribution.
     - proportions are limited by range of 0-1; transformation will expand this range. 
@@ -157,4 +160,5 @@ PF_raw <- raw[raw$X.U.FEFF.SPP == "P.form",]
 PL_raw <- transform(PL_raw, acLeft = arcsine(PL_raw$TOT.LEFT))
 
 ```
-    - this works, in the sense of adding a new column to the existing dataframe with an applied funtion BUT arcsine of any number greater than pi will give a NA (which is what is happening here)
+  
+   - this works, in the sense of adding a new column to the existing dataframe with an applied funtion BUT arcsine of any number greater than pi will give a NA (which is what is happening here)
