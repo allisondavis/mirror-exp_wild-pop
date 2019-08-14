@@ -103,9 +103,58 @@ t.test(p_form$TOT.PROP, mu=0.5, alternative = "two.sided")
   * I will compare the combo score between asexuals (P.form) and sexuals (P.lat) to see how similar/different their eye preference variation is. 
 
 ```{r}
-#NOT SURE IF T TEST IS RIGHT HERE; WILL IT JUST COMPARE MEANS AND NOT VARIANCES?
+
+hist(p_lat$TOT.PROP)
+hist(p_form$TOT.PROP)
+```
+    - Histogram shows that values aren't normally distributed; p_form shows an outlier ***(should I do analyses with and without it?)***
+
+```{r}
 
 t.test(p_lat$TOT.PROP, p_form$TOT.PROP)
+```
+    - T test may not be correct test, as it compares means and not variances. Still, not significant differences. 
+
+    - Will now do F-test: this will compare the variances of the two data sets.
+
+```{r}
+#two-sided is predicting that the variances could be either greater or less
+var.test(p_lat$TOT.PROP, p_form$TOT.PROP, alternative = "two.sided")
+
+#greater is predicting that variance of p.lat will be greater than p.form
+var.test(p_lat$TOT.PROP, p_form$TOT.PROP, alternative = "greater")
+
+#less is predicting that variance of p.lat will be less than p.form
+var.test(p_lat$TOT.PROP, p_form$TOT.PROP, alternative = "less")
 
 ```
-  
+    - none show anything significant. 
+    
+  * Will do an arcsine transformation of data to create a more normal distribution.
+    - proportions are limited by range of 0-1; transformation will expand this range. 
+    - logit transformation would expand range from -inf to +inf, but if proportions are 0% or 100% could cause inf to show up in analyses (not helpful).
+    - arcsine transformation still has a limit (0-pi), but is expanded from original proportion range.
+
+```{r}
+#arcsine function
+
+arcsine <- function(p) {
+  asin(sqrt(p))
+}
+
+#tranformation of scores only
+asPL <- arcsine(p_lat$TOT.PROP)
+asPF <- arcsine(p_form$TOT.PROP)
+
+
+#transformation of occurance data then recalculating score
+  #first need to sort raw data for species
+
+PL_raw <- raw[raw$X.U.FEFF.SPP == "P.lat",]
+PF_raw <- raw[raw$X.U.FEFF.SPP == "P.form",]
+
+
+PL_raw <- transform(PL_raw, acLeft = arcsine(PL_raw$TOT.LEFT))
+
+```
+    - this works, in the sense of adding a new column to the existing dataframe with an applied funtion BUT arcsine of any number greater than pi will give a NA (which is what is happening here)
