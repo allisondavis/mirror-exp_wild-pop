@@ -149,7 +149,15 @@ arcsine <- function(p) {
 asPL <- arcsine(p_lat$TOT.PROP)
 asPF <- arcsine(p_form$TOT.PROP)
 
+hist(asPL)
+hist(asPF)
 
+var.test(asPL, asPF, alternative = "greater")
+var.test(asPF, asPL, alternative = "greater")
+```
+  - Not really sure if the var test for greater is testing if y is greater than x, or if x is greater than y, so not sure how to interpret. Either way, it's not significant.
+
+```{r}
 #transformation of occurance data then recalculating score
   #first need to sort raw data for species
 
