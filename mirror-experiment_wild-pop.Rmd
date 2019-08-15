@@ -169,4 +169,4 @@ PL_raw <- transform(PL_raw, acLeft = arcsine(PL_raw$TOT.LEFT))
 
 ```
   
-   - this works, in the sense of adding a new column to the existing dataframe with an applied funtion BUT arcsine of any number greater than pi will give a NA (which is what is happening here)
+   - This works, in the sense of adding a new column to the existing dataframe with an applied funtion BUT arcsine of any number greater than pi will give a NA (which is what is happening here)
