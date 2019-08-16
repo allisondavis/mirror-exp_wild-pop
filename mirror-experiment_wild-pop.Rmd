@@ -131,7 +131,7 @@ var.test(p_lat$TOT.PROP, p_form$TOT.PROP, alternative = "less")
 
 ```
    
-   - none show anything significant. 
+   - none show anything significant. This could be do to the fact that F test assumes normally distributed data. Can try transforming the data (next step), or Levene's test (last step). 
     
   * Will do an arcsine transformation of data to create a more normal distribution.
     - proportions are limited by range of 0-1; transformation will expand this range. 
@@ -170,3 +170,13 @@ PL_raw <- transform(PL_raw, acLeft = arcsine(PL_raw$TOT.LEFT))
 ```
   
    - This works, in the sense of adding a new column to the existing dataframe with an applied funtion BUT arcsine of any number greater than pi will give a NA (which is what is happening here)
+   
+   * Will now try Levene's test. This is similar to the F-test in the sense that it is comparing variances, but it does not assume normality.
+   
+```{r}
+library(car)
+#will first try with original data
+leveneTest(pref$TOT.PROP, pref$X.U.FEFF.SPP, center=mean)
+  #super not significant
+
+```
