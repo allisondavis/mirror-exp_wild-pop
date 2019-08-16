@@ -42,7 +42,11 @@ pref <- read.csv(pref, header = TRUE, sep = ",", stringsAsFactors = TRUE)
 head(raw)
 head(pref)
 
-#will be focusing on preference scores, so I will separate out the sexual vs asexual only in pref
+#I will separate out the sexual vs asexual 
+
+p_form.raw <- raw[raw$X.U.FEFF.SPP =="P.form",]
+
+p_lat.raw <- raw[raw$X.U.FEFF.SPP == "P.lat",]
 
 p_form <- pref[pref$X.U.FEFF.SPP== "P.form",]
 head(p_form)
@@ -54,6 +58,37 @@ head(p_lat)
 ```
 
 ## Analyses
+
+#### First glance
+  
+  * These are just some summary statistics to get a feel for the data
+    - Will use the raw data as it has everything included
+
+```{r}
+#P. latipinna
+
+summary(p_lat.raw)
+(var_pl <- apply(p_lat.raw[3:15],2,var))
+(std.dev_pl <- apply(p_lat.raw[3:15], 2, sd))
+
+#P. formosa
+
+summary(p_form.raw)
+(var_pf <- apply(p_form.raw[3:15], 2, var))
+(std.dev_pf <- apply(p_lat.raw[3:15], 2, sd))
+
+#just to see the preference scores next to each other
+
+(var_pf.score <- apply(p_form[3:6],2,var))
+(var_pl.score <- apply(p_lat[3:6],2,var))
+
+(std.dev_pf.score <- apply(p_form[3:6], 2,sd))
+(std.dev_pl.score <- apply(p_lat[3:6],2,sd))
+
+
+
+
+```
 
 #### Tank differences
 

@@ -253,7 +253,11 @@ head(raw)</code></pre>
 ## 4        P.lat  London 0.5418502 0.4020101 0.4765258 0.4719301
 ## 5        P.lat Melissa 0.5000000 0.5521236 0.5310345 0.5260618
 ## 6        P.lat   Paris 0.5268817 0.5159574 0.5213904 0.5214196</code></pre>
-<pre class="r"><code>#will be focusing on preference scores, so I will separate out the sexual vs asexual only in pref
+<pre class="r"><code>#I will separate out the sexual vs asexual 
+
+p_form.raw &lt;- raw[raw$X.U.FEFF.SPP ==&quot;P.form&quot;,]
+
+p_lat.raw &lt;- raw[raw$X.U.FEFF.SPP == &quot;P.lat&quot;,]
 
 p_form &lt;- pref[pref$X.U.FEFF.SPP== &quot;P.form&quot;,]
 head(p_form)</code></pre>
@@ -276,6 +280,127 @@ head(p_lat)</code></pre>
 </div>
 <div id="analyses" class="section level2">
 <h2>Analyses</h2>
+<div id="first-glance" class="section level4">
+<h4>First glance</h4>
+<ul>
+<li>These are just some summary statistics to get a feel for the data
+<ul>
+<li>Will use the raw data as it has everything included</li>
+</ul></li>
+</ul>
+<pre class="r"><code>#P. latipinna
+
+summary(p_lat.raw)</code></pre>
+<pre><code>##  X.U.FEFF.SPP      NAME       A.LEFT         A.RIGHT           A.NA       
+##  P.form: 0    Beijing:1   Min.   : 88.0   Min.   : 72.0   Min.   : 25.00  
+##  P.lat :13    Camila :1   1st Qu.: 98.0   1st Qu.: 88.0   1st Qu.: 68.00  
+##               Jessica:1   Median :102.0   Median : 98.0   Median : 76.00  
+##               London :1   Mean   :113.1   Mean   :102.3   Mean   : 80.62  
+##               Melissa:1   3rd Qu.:123.0   3rd Qu.:104.0   3rd Qu.:104.00  
+##               Paris  :1   Max.   :161.0   Max.   :163.0   Max.   :123.00  
+##               (Other):7                                                   
+##      A.PROP           B.LEFT         B.RIGHT           B.NA       
+##  Min.   :0.3985   Min.   : 75.0   Min.   : 78.0   Min.   : 29.00  
+##  1st Qu.:0.4740   1st Qu.: 97.0   1st Qu.:104.0   1st Qu.: 42.00  
+##  Median :0.5269   Median :107.0   Median :113.0   Median : 73.00  
+##  Mean   :0.5256   Mean   :111.9   Mean   :109.5   Mean   : 74.54  
+##  3rd Qu.:0.5838   3rd Qu.:126.0   3rd Qu.:119.0   3rd Qu.: 97.00  
+##  Max.   :0.6389   Max.   :163.0   Max.   :133.0   Max.   :136.00  
+##                                                                   
+##      B.PROP          TOT.LEFT     TOT.RIGHT         TOT.NA     
+##  Min.   :0.3788   Min.   :176   Min.   :163.0   Min.   : 62.0  
+##  1st Qu.:0.4798   1st Qu.:203   1st Qu.:195.0   1st Qu.:122.0  
+##  Median :0.4933   Median :209   Median :210.0   Median :166.0  
+##  Mean   :0.5014   Mean   :225   Mean   :211.8   Mean   :155.2  
+##  3rd Qu.:0.5512   3rd Qu.:234   3rd Qu.:213.0   3rd Qu.:182.0  
+##  Max.   :0.6105   Max.   :324   Max.   :296.0   Max.   :225.0  
+##                                                                
+##     TOT.PROP         AVG.PROP     
+##  Min.   :0.4415   Min.   :0.4425  
+##  1st Qu.:0.4765   1st Qu.:0.4813  
+##  Median :0.5059   Median :0.5074  
+##  Mean   :0.5140   Mean   :0.5135  
+##  3rd Qu.:0.5489   3rd Qu.:0.5462  
+##  Max.   :0.6243   Max.   :0.6247  
+## </code></pre>
+<pre class="r"><code>(var_pl &lt;- apply(p_lat.raw[3:15],2,var))</code></pre>
+<pre><code>##       A.LEFT      A.RIGHT         A.NA       A.PROP       B.LEFT 
+## 5.027436e+02 5.417308e+02 9.204231e+02 5.090267e-03 7.037436e+02 
+##      B.RIGHT         B.NA       B.PROP     TOT.LEFT    TOT.RIGHT 
+## 2.237692e+02 1.017603e+03 4.056220e-03 1.608500e+03 1.035641e+03 
+##       TOT.NA     TOT.PROP     AVG.PROP 
+## 2.754641e+03 2.665958e-03 2.585208e-03</code></pre>
+<pre class="r"><code>(std.dev_pl &lt;- apply(p_lat.raw[3:15], 2, sd))</code></pre>
+<pre><code>##      A.LEFT     A.RIGHT        A.NA      A.PROP      B.LEFT     B.RIGHT 
+## 22.42194438 23.27511051 30.33847519  0.07134611 26.52816597 14.95891810 
+##        B.NA      B.PROP    TOT.LEFT   TOT.RIGHT      TOT.NA    TOT.PROP 
+## 31.89988345  0.06368846 40.10610926 32.18137700 52.48467420  0.05163292 
+##    AVG.PROP 
+##  0.05084494</code></pre>
+<pre class="r"><code>#P. formosa
+
+summary(p_form.raw)</code></pre>
+<pre><code>##  X.U.FEFF.SPP      NAME        A.LEFT          A.RIGHT     
+##  P.form:16    Ana    : 1   Min.   :  0.00   Min.   : 58.0  
+##  P.lat : 0    Ashley : 1   1st Qu.: 89.00   1st Qu.: 88.5  
+##               Ava    : 1   Median : 92.50   Median : 98.0  
+##               Chloe  : 1   Mean   : 91.81   Mean   :101.1  
+##               Dory   : 1   3rd Qu.:106.00   3rd Qu.:112.5  
+##               Emmy   : 1   Max.   :127.00   Max.   :164.0  
+##               (Other):10                                   
+##       A.NA           A.PROP           B.LEFT          B.RIGHT      
+##  Min.   : 64.0   Min.   :0.0000   Min.   : 53.00   Min.   : 46.00  
+##  1st Qu.: 93.0   1st Qu.:0.4467   1st Qu.: 90.75   1st Qu.: 91.75  
+##  Median :100.0   Median :0.5005   Median :102.50   Median :106.00  
+##  Mean   :103.1   Mean   :0.4736   Mean   :103.69   Mean   : 99.88  
+##  3rd Qu.:124.0   3rd Qu.:0.5307   3rd Qu.:121.25   3rd Qu.:114.50  
+##  Max.   :132.0   Max.   :0.6865   Max.   :136.00   Max.   :122.00  
+##                                                                    
+##       B.NA            B.PROP          TOT.LEFT       TOT.RIGHT    
+##  Min.   : 42.00   Min.   :0.3581   Min.   : 90.0   Min.   :160.0  
+##  1st Qu.: 61.75   1st Qu.:0.4708   1st Qu.:181.5   1st Qu.:181.0  
+##  Median : 84.50   Median :0.5105   Median :202.0   Median :196.0  
+##  Mean   : 92.44   Mean   :0.5085   Mean   :195.5   Mean   :201.0  
+##  3rd Qu.:122.25   3rd Qu.:0.5452   3rd Qu.:221.5   3rd Qu.:213.2  
+##  Max.   :153.00   Max.   :0.6783   Max.   :252.0   Max.   :268.0  
+##                                                                   
+##      TOT.NA         TOT.PROP         AVG.PROP     
+##  Min.   :139.0   Min.   :0.2514   Min.   :0.2320  
+##  1st Qu.:159.8   1st Qu.:0.4791   1st Qu.:0.4786  
+##  Median :195.0   Median :0.5126   Median :0.5121  
+##  Mean   :195.5   Mean   :0.4909   Mean   :0.4910  
+##  3rd Qu.:224.2   3rd Qu.:0.5379   3rd Qu.:0.5384  
+##  Max.   :262.0   Max.   :0.5860   Max.   :0.5983  
+## </code></pre>
+<pre class="r"><code>(var_pf &lt;- apply(p_form.raw[3:15], 2, var))</code></pre>
+<pre><code>##       A.LEFT      A.RIGHT         A.NA       A.PROP       B.LEFT 
+## 7.701625e+02 6.533167e+02 4.340625e+02 2.062870e-02 5.250292e+02 
+##      B.RIGHT         B.NA       B.PROP     TOT.LEFT    TOT.RIGHT 
+## 3.947833e+02 1.314929e+03 4.856355e-03 1.557867e+03 8.929333e+02 
+##       TOT.NA     TOT.PROP     AVG.PROP 
+## 1.537467e+03 6.044816e-03 7.068818e-03</code></pre>
+<pre class="r"><code>(std.dev_pf &lt;- apply(p_lat.raw[3:15], 2, sd))</code></pre>
+<pre><code>##      A.LEFT     A.RIGHT        A.NA      A.PROP      B.LEFT     B.RIGHT 
+## 22.42194438 23.27511051 30.33847519  0.07134611 26.52816597 14.95891810 
+##        B.NA      B.PROP    TOT.LEFT   TOT.RIGHT      TOT.NA    TOT.PROP 
+## 31.89988345  0.06368846 40.10610926 32.18137700 52.48467420  0.05163292 
+##    AVG.PROP 
+##  0.05084494</code></pre>
+<pre class="r"><code>#just to see the preference scores next to each other
+
+(var_pf.score &lt;- apply(p_form[3:6],2,var))</code></pre>
+<pre><code>##      A.PROP      B.PROP    TOT.PROP    AVG.PROP 
+## 0.020628697 0.004856355 0.006044816 0.007068818</code></pre>
+<pre class="r"><code>(var_pl.score &lt;- apply(p_lat[3:6],2,var))</code></pre>
+<pre><code>##      A.PROP      B.PROP    TOT.PROP    AVG.PROP 
+## 0.005090267 0.004056220 0.002665958 0.002585208</code></pre>
+<pre class="r"><code>(std.dev_pf.score &lt;- apply(p_form[3:6], 2,sd))</code></pre>
+<pre><code>##     A.PROP     B.PROP   TOT.PROP   AVG.PROP 
+## 0.14362694 0.06968755 0.07774842 0.08407626</code></pre>
+<pre class="r"><code>(std.dev_pl.score &lt;- apply(p_lat[3:6],2,sd))</code></pre>
+<pre><code>##     A.PROP     B.PROP   TOT.PROP   AVG.PROP 
+## 0.07134611 0.06368846 0.05163292 0.05084494</code></pre>
+</div>
 <div id="tank-differences" class="section level4">
 <h4>Tank differences</h4>
 <ul>
@@ -450,7 +575,7 @@ var.test(p_lat$TOT.PROP, p_form$TOT.PROP, alternative = &quot;less&quot;)</code>
 ## ratio of variances 
 ##          0.4410321</code></pre>
 <ul>
-<li><p>none show anything significant.</p></li>
+<li><p>none show anything significant. This could be do to the fact that F test assumes normally distributed data. Can try transforming the data (next step), or Levene’s test (last step).</p></li>
 <li>Will do an arcsine transformation of data to create a more normal distribution.
 <ul>
 <li>proportions are limited by range of 0-1; transformation will expand this range.</li>
@@ -509,8 +634,19 @@ PF_raw &lt;- raw[raw$X.U.FEFF.SPP == &quot;P.form&quot;,]
 PL_raw &lt;- transform(PL_raw, acLeft = arcsine(PL_raw$TOT.LEFT))</code></pre>
 <pre><code>## Warning in asin(sqrt(p)): NaNs produced</code></pre>
 <ul>
-<li>This works, in the sense of adding a new column to the existing dataframe with an applied funtion BUT arcsine of any number greater than pi will give a NA (which is what is happening here)</li>
+<li><p>This works, in the sense of adding a new column to the existing dataframe with an applied funtion BUT arcsine of any number greater than pi will give a NA (which is what is happening here)</p></li>
+<li><p>Will now try Levene’s test. This is similar to the F-test in the sense that it is comparing variances, but it does not assume normality.</p></li>
 </ul>
+<pre class="r"><code>library(car)</code></pre>
+<pre><code>## Warning: package 'car' was built under R version 3.5.3</code></pre>
+<pre><code>## Loading required package: carData</code></pre>
+<pre class="r"><code>#will first try with original data
+leveneTest(pref$TOT.PROP, pref$X.U.FEFF.SPP, center=mean)</code></pre>
+<pre><code>## Levene's Test for Homogeneity of Variance (center = mean)
+##       Df F value Pr(&gt;F)
+## group  1  0.3801 0.5427
+##       27</code></pre>
+<pre class="r"><code>  #super not significant</code></pre>
 </div>
 </div>
 </div>
