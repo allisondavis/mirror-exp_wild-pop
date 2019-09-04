@@ -16,10 +16,15 @@ knitr::opts_chunk$set(echo = TRUE)
   Bilateral vision allows organisms to specialize their vision/visual tasks in order to perform more efficiently. Fish use their bilateral vision to more effeciently shoal/school, inspect predators, find food, and mate. In addition to aiding in each individual task, lateralization can help multitask (e.g. feed and watch for predators). 
   The self inspection/mirror experiment test which visual field (left or right) fish prefer to use in the identification/assessment of a **conspecific.** Here we not only tested for difference in preference, but differences in the amount of variation between sexual sailfin mollies and asexual amazon mollies.
 
+***
+
 #### *General Methods*
   Used two tanks (arbitrarily labled A and B). Long walls of both tanks had acrylic mirror; short walls had white corrugated poster board. Fish were placed in tank for 5min acclimation followed by a 10min swim period, in which we recorded their visual use. 
   Occurances of left or right visual use were determined by scoring every 2sec of video, starting at second 10 and ending at minute 10. This gave 296 occurance values (left, right, or NA for no direct lateralized use). Preference scores calculated as: left/(left+right). 
   A total of 16 Amazon mollies (P. form) and 13 sailfin mollies (P. lat) went through this experiment. *[as of 13 August 2019]*
+  A total of 20 Amazon mollies (P.form) and 20 sailfin mollies (P.lat) went through this experiment. *[as of 3 September 2019]*
+
+*** 
 
 ## Data collection
 
@@ -57,9 +62,11 @@ head(p_lat)
 
 ```
 
+***
+
 ## Analyses
 
-#### First glance
+#### <font color="blue">First glance</font>
   
   * These are just some summary statistics to get a feel for the data
     - Will use the raw data as it has everything included
@@ -76,8 +83,11 @@ summary(p_lat.raw)
 summary(p_form.raw)
 (var_pf <- apply(p_form.raw[3:15], 2, var))
 (std.dev_pf <- apply(p_lat.raw[3:15], 2, sd))
+```
 
-#just to see the preference scores next to each other
+  - <font color="mediumpurple1">Just to see the preference scores next to each other.</font>
+
+```{r}
 
 (var_pf.score <- apply(p_form[3:6],2,var))
 (var_pl.score <- apply(p_lat[3:6],2,var))
@@ -86,11 +96,9 @@ summary(p_form.raw)
 (std.dev_pl.score <- apply(p_lat[3:6],2,sd))
 
 
-
-
 ```
 
-#### Tank differences
+#### <font color="blue">Tank differences</font>
 
   * Here I look at the variance in preference scores between tank A and tank B to see if there are any tank effects. 
   
@@ -107,8 +115,9 @@ t.test(p_lat$A.PROP, p_lat$B.PROP)
 
 t.test(p_form$A.PROP, p_form$B.PROP)
 ```
+  - <font color="green">No significant difference found between the tanks.</font>
 
-#### Combo vs average
+#### <font color="red">Combo vs average</font>
   * I will also test if there is a significant difference in using the combo score vs the averaged score
 
 ```{r}
@@ -117,11 +126,10 @@ t.test(p_lat$TOT.PROP, p_lat$AVG.PROP)
 
 t.test(p_form$TOT.PROP, p_form$AVG.PROP)
 
-#nope! Appear to be pretty much the same. 
-
 ```
+  - nope! Appear to be pretty much the same. <font color="red">After repeating analyses with 20 of each species, appears there is a difference between the combo preference and the averaged preference.</font>
 
-#### Eye preference for each species
+#### <font color="blue">Eye preference for each species</font>
   * I will look at each species individually to see if they preferencially use their left or right visual field for conspecific/self inspection.
 
 ```{r}
@@ -132,9 +140,9 @@ t.test(p_lat$TOT.PROP, mu=0.5, alternative = "two.sided")
 t.test(p_form$TOT.PROP, mu=0.5, alternative = "two.sided")
 
 ```
-***NOT SURE HOW TO INTERPRET OR IF THIS IS EVEN THE CORRECT WAY TO TEST? SEE PAPER***
+  - <font color="green">Neither sailfin or amazons show significant lateralization of vision.</font> 
 
-#### Asex vs Sex
+#### <font color="blue">Asex vs Sex</font>
   * I will compare the combo score between asexuals (P.form) and sexuals (P.lat) to see how similar/different their eye preference variation is. 
 
 ```{r}
@@ -143,7 +151,7 @@ hist(p_lat$TOT.PROP)
 hist(p_form$TOT.PROP)
 ```
    
-   - Histogram shows that values aren't normally distributed; p_form shows an outlier ***(should I do analyses with and without it?)***
+   - <font color="green">Histogram shows that values aren't normally distributed; p_form shows an outlier</font> ***(should I do analyses with and without it?)***
 
 ```{r}
 
@@ -152,7 +160,7 @@ t.test(p_lat$TOT.PROP, p_form$TOT.PROP)
   
    - T test may not be correct test, as it compares means and not variances. Still, not significant differences. 
 
-   - Will now do F-test: this will compare the variances of the two data sets.
+   - <font color="deepskyblue">Will now do F-test: this will compare the variances of the two data sets.</font>
 
 ```{r}
 #two-sided is predicting that the variances could be either greater or less
@@ -166,9 +174,9 @@ var.test(p_lat$TOT.PROP, p_form$TOT.PROP, alternative = "less")
 
 ```
    
-   - none show anything significant. This could be do to the fact that F test assumes normally distributed data. Can try transforming the data (next step), or Levene's test (last step). 
+   - <font color="green">none show anything significant.</font> This could be do to the fact that F test assumes normally distributed data. Can try transforming the data (next step), or Levene's test (last step). 
     
-  * Will do an arcsine transformation of data to create a more normal distribution.
+  * <font color="deepskyblue">Will do an arcsine transformation of data to create a more normal distribution.</font>
     - proportions are limited by range of 0-1; transformation will expand this range. 
     - logit transformation would expand range from -inf to +inf, but if proportions are 0% or 100% could cause inf to show up in analyses (not helpful).
     - arcsine transformation still has a limit (0-pi), but is expanded from original proportion range.
@@ -190,7 +198,7 @@ hist(asPF)
 var.test(asPL, asPF, alternative = "greater")
 var.test(asPF, asPL, alternative = "greater")
 ```
-  - Not really sure if the var test for greater is testing if y is greater than x, or if x is greater than y, so not sure how to interpret. Either way, it's not significant.
+  - Not really sure if the var test for greater is testing if y is greater than x, or if x is greater than y, so not sure how to interpret. <font color="green">Either way, it's not significant.</font>
 
 ```{r}
 #transformation of occurance data then recalculating score
@@ -206,12 +214,13 @@ PL_raw <- transform(PL_raw, acLeft = arcsine(PL_raw$TOT.LEFT))
   
    - This works, in the sense of adding a new column to the existing dataframe with an applied funtion BUT arcsine of any number greater than pi will give a NA (which is what is happening here)
    
-   * Will now try Levene's test. This is similar to the F-test in the sense that it is comparing variances, but it does not assume normality.
+   * <font color="light blue">Will now try Levene's test. This is similar to the F-test in the sense that it is comparing variances, but it does not assume normality.</font>
    
 ```{r}
 library(car)
 #will first try with original data
 leveneTest(pref$TOT.PROP, pref$X.U.FEFF.SPP, center=mean)
-  #super not significant
 
 ```
+  - <font color="green">super not significant.</font>
+  
