@@ -176,10 +176,11 @@ var.test(p_lat$TOT.PROP, p_form$TOT.PROP, alternative = "less")
    
    - <font color="green">none show anything significant.</font> This could be do to the fact that F test assumes normally distributed data. Can try transforming the data (next step), or Levene's test (last step). 
     
-  * <font color="deepskyblue">Will do an arcsine transformation of data to create a more normal distribution.</font>
+  * <font color="deepskyblue">Will transform  data to stablize variances/normalize data.</font>
     - proportions are limited by range of 0-1; transformation will expand this range. 
-    - logit transformation would expand range from -inf to +inf, but if proportions are 0% or 100% could cause inf to show up in analyses (not helpful).
-    - arcsine transformation still has a limit (0-pi), but is expanded from original proportion range.
+    - logit transformation (log[p/(1-p)]): expands range from -inf to +inf, but if proportions are 0% or 100% could cause inf to show up in analyses.
+    - arcsine transformation (arcsin[sqrt(p)]): still has a limit (0-pi), but is expanded from original proportion range.
+    - <font color="red">MAY WANT TO INCLUDE WARTON AND HUI PAPER ON TRANSFORMATION ISSUES</font>
 
 ```{r}
 #arcsine function
@@ -199,6 +200,24 @@ var.test(asPL, asPF, alternative = "greater")
 var.test(asPF, asPL, alternative = "greater")
 ```
   - Not really sure if the var test for greater is testing if y is greater than x, or if x is greater than y, so not sure how to interpret. <font color="green">Either way, it's not significant.</font>
+  
+```{r}
+#logit transformation 
+library (car)
+
+ltPL <- logit(p_lat$TOT.PROP)
+ltPF <- logit(p_form$TOT.PROP)
+
+hist(ltPL)
+hist(ltPF) #need to adjust range 
+
+var.test(ltPL, ltPF, alternative = "greater")
+var.test(ltPF, ltPL, alternative = "greater")
+
+
+```
+
+  - <font color="green">Still showing no significance.</font> This transformation still doesn't help with normality. Not sure if this is something I need to be so concerned about.
 
 ```{r}
 #transformation of occurance data then recalculating score
@@ -217,9 +236,10 @@ PL_raw <- transform(PL_raw, acLeft = arcsine(PL_raw$TOT.LEFT))
    * <font color="light blue">Will now try Levene's test. This is similar to the F-test in the sense that it is comparing variances, but it does not assume normality.</font>
    
 ```{r}
-library(car)
 #will first try with original data
 leveneTest(pref$TOT.PROP, pref$X.U.FEFF.SPP, center=mean)
+
+#to perform levene test on transformed data, need to add to pref data table first; if not will get following error: error in comlete cases: not all arguments have same length
 
 ```
   - <font color="green">super not significant.</font>
