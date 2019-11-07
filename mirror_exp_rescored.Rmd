@@ -1,0 +1,302 @@
+---
+title: "mirror_exp_rescored"
+author: "Allison Davis"
+date: "October 25, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Self inspection/ Mirror experiment
+
+## Overview/Purpose
+#### *Purpose*
+  Bilateral vision allows organisms to specialize their vision/visual tasks in order to perform more efficiently. Fish use their bilateral vision to more effeciently shoal/school, inspect predators, find food, and mate. In addition to aiding in each individual task, lateralization can help multitask (e.g. feed and watch for predators). 
+  The self inspection/mirror experiment test which visual field (left or right) fish prefer to use in the identification/assessment of a **conspecific.** Here we not only tested for difference in preference, but differences in the amount of variation between sexual sailfin mollies and asexual amazon mollies.
+
+***
+
+#### *General Methods*
+  Used two tanks (arbitrarily labled A and B). Long walls of both tanks had acrylic mirror; short walls had white corrugated poster board. Fish were placed in tank for 5min acclimation followed by a 10min swim period, in which we recorded their visual use. 
+  Occurances of left or right visual use were determined by scoring every 2sec of video, starting at second 10 and ending at minute 10. This gave 296 occurance values (left, right, or NA for no direct lateralized use). Preference scores calculated as: left/(left+right). 
+  A total of 16 Amazon mollies (P. form) and 13 sailfin mollies (P. lat) went through this experiment. *[as of 13 August 2019]*
+  A total of 20 Amazon mollies (P.form) and 20 sailfin mollies (P.lat) went through this experiment. *[as of 3 September 2019]*
+  *For rescored data*: Previously, preference was determined by angle towards closest mirror; if the fish was closest to bottom mirror but angled with face towards top mirror, this was determined as NA. To rescore, I went through all the NAs and determined eye use towards any mirror (previous example was determined left or right in regards to eye use on top mirror). Any NAs still remaining are of positions in which the fish is perpendicular to the mirror (facing it head on). 
+
+*** 
+
+## Data collection
+
+  * raw data: occurance number and preference score for each individual fish (left, right, NA)
+  * pref data: preference scores for tank A, B, combo of A and B, and average of A and B
+      - combo score determined as left/(left+right) for total left and right occurances
+      - average score determined by averaging tank A pref score and tank B pref score
+
+```{r}
+library(curl)
+
+rawRE <- curl("https://raw.githubusercontent.com/allisondavis/mirror-exp_wild-pop/master/adavis_mirror-exp_wild-pop_rescored-raw.csv")
+
+rawRE <- read.csv(rawRE, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+
+prefRE <- curl("https://raw.githubusercontent.com/allisondavis/mirror-exp_wild-pop/master/adavis_mirror-exp_wild-pop_rescored-prefs.csv")
+
+prefRE <- read.csv(prefRE, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+
+head(rawRE)
+head(prefRE)
+
+#I will separate out the sexual vs asexual 
+
+p_form.rawRE <- rawRE[rawRE$X.U.FEFF.SPP =="P.form",]
+
+p_lat.rawRE <- rawRE[rawRE$X.U.FEFF.SPP == "P.lat",]
+
+p_formRE <- prefRE[prefRE$X.U.FEFF.SPP== "P.form",]
+head(p_formRE)
+
+p_latRE <- prefRE[prefRE$X.U.FEFF.SPP== "P.lat",]
+head(p_latRE)
+
+
+```
+
+***
+
+## Analyses
+
+#### <font color="deepskyblue">First glance</font>
+  
+  * These are just some summary statistics to get a feel for the data
+    - Will use the raw data as it has everything included
+
+```{r}
+#P. latipinna
+
+summary(p_lat.rawRE)
+(var_pl_RE <- apply(p_lat.rawRE[3:15],2,var))
+(std.dev_pl_RE <- apply(p_lat.rawRE[3:15], 2, sd))
+
+#P. formosa
+
+summary(p_form.rawRE)
+(var_pf_RE <- apply(p_form.rawRE[3:15], 2, var))
+(std.dev_pf_RE <- apply(p_lat.rawRE[3:15], 2, sd))
+```
+
+  - <font color="darkorchid4">Just to see the preference scores next to each other.</font>
+
+```{r}
+
+(var_pf.score_RE <- apply(p_formRE[3:6],2,var))
+(var_pl.score_RE <- apply(p_latRE[3:6],2,var))
+
+(std.dev_pf.score_RE <- apply(p_formRE[3:6], 2,sd))
+(std.dev_pl.score_RE <- apply(p_latRE[3:6],2,sd))
+
+
+```
+
+#### <font color="deepskyblue">Tank differences</font>
+
+  * Here I look at the variance in preference scores between tank A and tank B to see if there are any tank effects. 
+  
+```{r}
+(vA_lat_RE <- var(p_latRE$A.PROP))
+(vB_lat_RE <- var(p_latRE$B.PROP))
+#variances unequal, confirming welch's two-sample t
+
+t.test(p_latRE$A.PROP, p_latRE$B.PROP)
+
+(vA_form_RE <- var(p_formRE$A.PROP))
+(vB_form_RE <- var(p_formRE$B.PROP))
+#variances unequal, confirming welche's two-sample t
+
+t.test(p_formRE$A.PROP, p_formRE$B.PROP)
+```
+  - <font color="darkolivegreen">No significant difference found between the tanks.</font>
+
+#### <font color="deepskyblue">Combo vs average</font>
+  * I will also test if there is a significant difference in using the combo score vs the averaged score
+
+```{r}
+
+t.test(p_latRE$TOT.PROP, p_latRE$AVG.PROP)
+
+t.test(p_formRE$TOT.PROP, p_formRE$AVG.PROP)
+
+```
+  - nope! Appear to be pretty much the same. <font color="red">After repeating analyses with 20 of each species, appears there is a difference between the combo preference and the averaged preference.</font>
+
+#### <font color="deepskyblue">Eye preference for each species</font>
+  * I will look at each species individually to see if they preferencially use their left or right visual field for conspecific/self inspection.
+
+```{r}
+#mu is assumed to be 0.5, meaning no eye preference. One-sampled t-test will determine significant deviation from this mean.
+
+t.test(p_latRE$TOT.PROP, mu=0.5, alternative = "two.sided")
+
+t.test(p_formRE$TOT.PROP, mu=0.5, alternative = "two.sided")
+
+```
+  - <font color="darkolivegreen">Neither sailfin or amazons show significant lateralization of vision.</font> 
+
+#### <font color="deepskyblue">Asex vs Sex</font>
+  * I will compare the combo score between asexuals (P.form) and sexuals (P.lat) to see how they differ in their eye preference *variation*. 
+
+```{r}
+
+hist(p_latRE$TOT.PROP)
+hist(p_formRE$TOT.PROP)
+```
+   
+   - <font color="darkolivegreen">Histogram shows that values aren't normally distributed; p_form shows an outlier</font> 
+
+```{r}
+
+t.test(p_latRE$TOT.PROP, p_formRE$TOT.PROP)
+```
+  
+   - T test may not be correct test, as it compares means and not variances. Still, not significant differences. 
+
+   - <font color="deepskyblue">Will now do F-test: this will compare the variances of the two data sets.</font>
+
+```{r}
+#two-sided is predicting that the variances could be either greater or less
+var.test(p_latRE$TOT.PROP, p_formRE$TOT.PROP, alternative = "two.sided")
+
+#greater is predicting that variance of p.lat will be greater than p.form
+var.test(p_latRE$TOT.PROP, p_formRE$TOT.PROP, alternative = "greater")
+
+#less is predicting that variance of p.lat will be less than p.form
+var.test(p_latRE$TOT.PROP, p_formRE$TOT.PROP, alternative = "less")
+
+```
+   
+   - <font color="darkolivegreen">none show anything significant.</font> This could be do to the fact that F test assumes normally distributed data. Can try transforming the data or Levene's test (last section). 
+    
+
+#### <font color="deepskyblue">Outlier tests</font>
+  * Histogram shows what appear to be outliers in both species. Will now perform a Tukey's outlier test to see if they are in fact outlier, and if removing these outliers changes the variance between species.
+
+```{r}
+
+library(DescTools)
+
+Outlier(p_latRE$TOT.PROP, method=c("boxplot"), value = FALSE)
+
+  #no outliers
+
+Outlier(p_formRE$TOT.PROP, method =c("boxplot"), value = FALSE)
+        
+  #outliers at row 2, 3, 11, 19
+
+(PF_outliers <- p_formRE[c(2,3,11,19),])
+
+```
+
+<font color="darkorchid4">Looks like there are four outlier in the formosa data, but no outliers in the latipinna data.</font>
+
+  * I will create a new dataframe without these rows, and test for eye preference and compare variation again.
+
+```{r}
+PFORM_RE <- p_formRE[-c(2,3,11,19),]
+
+# test for eye preference
+
+t.test(PFORM_RE$TOT.PROP, mu=0.5, alternative = "two.sided")
+
+# comparing species variances 
+
+#two-sided is predicting that the variances could be either greater or less
+var.test(p_latRE$TOT.PROP, PFORM_RE$TOT.PROP, alternative = "two.sided")
+
+#greater is predicting that variance of p.lat will be greater than p.form
+var.test(p_latRE$TOT.PROP, PFORM_RE$TOT.PROP, alternative = "greater")
+
+#less is predicting that variance of p.lat will be less than p.form
+var.test(p_latRE$TOT.PROP, PFORM_RE$TOT.PROP, alternative = "less")
+
+
+```
+
+<font color="firebrick">By removing the outliers, I get significant results.</font>
+
+  * <font color="blue">For lateralized vision:</font> the p value is now significant, and the mean is 0.5182296; this suggests that the amazons are slightly left-eye lateralized for viewing conspecifics.
+  
+  * <font color="blue">For variance comparison:</font> by removing the outliers, the results show a higher amount of variation in sailfins as compared to amazons. 
+
+#### <font color="deepskyblue">The following section deals with data transformation:</font>
+
+Will transform  data to stablize variances/normalize data.
+    - proportions are limited by range of 0-1; transformation will expand this range. 
+    - logit transformation (log[p/(1-p)]): expands range from -inf to +inf, but if proportions are 0% or 100% could cause inf to show up in analyses.
+    - arcsine transformation (arcsin[sqrt(p)]): still has a limit (0-pi), but is expanded from original proportion range.
+    - <font color="red">MAY WANT TO INCLUDE WARTON AND HUI PAPER ON TRANSFORMATION ISSUES</font>
+
+```{r}
+#arcsine function
+
+arcsine <- function(p) {
+  asin(sqrt(p))
+}
+
+#tranformation of scores only
+asPL_RE <- arcsine(p_latRE$TOT.PROP)
+asPF_RE <- arcsine(p_formRE$TOT.PROP)
+
+hist(asPL_RE)
+hist(asPF_RE)
+
+var.test(asPL_RE, asPF_RE, alternative = "greater")
+var.test(asPF_RE, asPL_RE, alternative = "greater")
+```
+  - Not really sure if the var test for greater is testing if y is greater than x, or if x is greater than y, so not sure how to interpret. <font color="green">Either way, it's not significant.</font>
+  
+```{r}
+#logit transformation 
+library (car)
+
+ltPL_RE <- logit(p_latRE$TOT.PROP)
+ltPF_RE <- logit(p_formRE$TOT.PROP)
+
+hist(ltPL_RE)
+hist(ltPF_RE) #need to adjust range 
+
+var.test(ltPL_RE, ltPF_RE, alternative = "greater")
+var.test(ltPF_RE, ltPL_RE, alternative = "greater")
+
+
+```
+
+  - <font color="green">Still showing no significance.</font> This transformation still doesn't help with normality. Not sure if this is something I need to be so concerned about.
+
+```{r}
+#transformation of occurance data then recalculating score
+  #first need to sort raw data for species
+
+PL_rawRE <- rawRE[rawRE$X.U.FEFF.SPP == "P.lat",]
+PF_rawRE <- rawRE[rawRE$X.U.FEFF.SPP == "P.form",]
+
+
+PL_rawRE <- transform(PL_rawRE, acLeft = arcsine(PL_rawRE$TOT.LEFT))
+
+```
+  
+   - This works, in the sense of adding a new column to the existing dataframe with an applied funtion BUT arcsine of any number greater than pi will give a NA (which is what is happening here)
+   
+   * <font color="light blue">Will now try Levene's test. This is similar to the F-test in the sense that it is comparing variances, but it does not assume normality.</font>
+   
+```{r}
+#will first try with original data
+leveneTest(prefRE$TOT.PROP, prefRE$X.U.FEFF.SPP, center=mean)
+
+#to perform levene test on transformed data, need to add to pref data table first; if not will get following error: error in comlete cases: not all arguments have same length
+
+```
+
+
+
+
