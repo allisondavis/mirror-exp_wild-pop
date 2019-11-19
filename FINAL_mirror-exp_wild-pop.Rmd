@@ -1,0 +1,118 @@
+---
+title: "FINAL_mirror-exp_wild-pop"
+author: "Allison Davis"
+date: "November 19, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data collection
+
+  * raw data: occurance number and preference score for each individual fish (left, right, NA)
+  * pref data: preference scores for tank A, B, combo of A and B, and average of A and B
+      - combo score determined as left/(left+right) for total left and right occurances
+      - average score determined by averaging tank A pref score and tank B pref score
+
+```{r}
+library(curl)
+
+rawRE <- curl("https://raw.githubusercontent.com/allisondavis/mirror-exp_wild-pop/master/adavis_mirror-exp_wild-pop_rescored-raw.csv")
+
+rawRE <- read.csv(rawRE, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+
+prefRE <- curl("https://raw.githubusercontent.com/allisondavis/mirror-exp_wild-pop/master/adavis_mirror-exp_wild-pop_rescored-prefs.csv")
+
+prefRE <- read.csv(prefRE, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+
+head(rawRE)
+head(prefRE)
+
+#I will separate out the sexual vs asexual 
+
+p_form.rawRE <- rawRE[rawRE$X.U.FEFF.SPP =="P.form",]
+
+p_lat.rawRE <- rawRE[rawRE$X.U.FEFF.SPP == "P.lat",]
+
+p_formRE <- prefRE[prefRE$X.U.FEFF.SPP== "P.form",]
+head(p_formRE)
+
+p_latRE <- prefRE[prefRE$X.U.FEFF.SPP== "P.lat",]
+head(p_latRE)
+
+
+```
+
+
+#### <font color="deepskyblue">Outlier tests</font>
+  * Histogram shows what appear to be outliers in both species. Will now perform a Tukey's outlier test to see if they are in fact outlier, and if removing these outliers changes the variance between species.
+
+```{r}
+
+library(DescTools)
+
+Outlier(p_latRE$TOT.PROP, method=c("boxplot"), value = FALSE)
+
+  #no outliers
+
+Outlier(p_formRE$TOT.PROP, method =c("boxplot"), value = FALSE)
+        
+  #outliers at row 2, 3, 11, 19
+
+(PF_outliers <- p_formRE[c(2,3,11,19),])
+
+```
+
+
+<font color="darkorchid4">Looks like there are four outlier in the formosa data, but no outliers in the latipinna data.</font>
+
+  * I will create a new dataframe without these rows, and test for eye preference and compare variation again.
+
+```{r}
+PFORM_RE <- p_formRE[-c(2,3,11,19),]
+
+# test for eye preference
+
+t.test(PFORM_RE$TOT.PROP, mu=0.5, alternative = "two.sided")
+
+# comparing species variances 
+
+#two-sided is predicting that the variances could be either greater or less
+var.test(p_latRE$TOT.PROP, PFORM_RE$TOT.PROP, alternative = "two.sided")
+
+#greater is predicting that variance of p.lat will be greater than p.form
+var.test(p_latRE$TOT.PROP, PFORM_RE$TOT.PROP, alternative = "greater")
+
+#less is predicting that variance of p.lat will be less than p.form
+var.test(p_latRE$TOT.PROP, PFORM_RE$TOT.PROP, alternative = "less")
+
+
+```
+
+
+<font color="firebrick">By removing the outliers, I get significant results.</font>
+
+  * <font color="blue">For lateralized vision:</font> the p value is now significant, and the mean is 0.5182296; this suggests that the amazons are slightly left-eye lateralized for viewing conspecifics.
+  
+  * <font color="blue">For variance comparison:</font> by removing the outliers, the results show a higher amount of variation in sailfins as compared to amazons. 
+
+#### <font color="chocolate3">Will create boxplots using both the original, and outlier-removed data</font>
+
+  * Will combine the total preference scores of both original and outlier-removed data into one dataset in order to use ggplot more easily.
+  
+```{r}
+library(ggplot2)
+library(ggsignif)
+
+OG_pref_RE <- rbind(p_latRE, p_formRE)
+
+OR_pref_RE <- rbind(p_latRE, PFORM_RE)
+
+ggplot(OG_pref_RE, aes(x=X.U.FEFF.SPP, y=TOT.PROP)) + geom_boxplot(outlier.colour = "red", outlier.shape = 8, outlier.size = 2) + xlab("Species") + ylab("Preference score") 
+
+ggplot(OR_pref_RE, aes(x=X.U.FEFF.SPP, y=TOT.PROP)) + geom_boxplot() + xlab("Species") + ylab("Preference score") 
+
+
+```
