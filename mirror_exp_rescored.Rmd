@@ -228,6 +228,25 @@ var.test(p_latRE$TOT.PROP, PFORM_RE$TOT.PROP, alternative = "less")
   
   * <font color="blue">For variance comparison:</font> by removing the outliers, the results show a higher amount of variation in sailfins as compared to amazons. 
 
+#### <font color="chocolate3">Will create boxplots using both the original, and outlier-removed data</font>
+
+  * Will combine the total preference scores of both original and outlier-removed data into one dataset in order to use ggplot more easily.
+  
+```{r}
+library(ggplot2)
+library(ggsignif)
+
+OG_pref_RE <- rbind(p_latRE, p_formRE)
+
+OR_pref_RE <- rbind(p_latRE, PFORM_RE)
+
+ggplot(OG_pref_RE, aes(x=X.U.FEFF.SPP, y=TOT.PROP)) + geom_boxplot(outlier.colour = "red", outlier.shape = 8, outlier.size = 2) + xlab("Species") + ylab("Preference score") 
+
+ggplot(OR_pref_RE, aes(x=X.U.FEFF.SPP, y=TOT.PROP)) + geom_boxplot() + xlab("Species") + ylab("Preference score") 
+
+
+```
+
 #### <font color="deepskyblue">The following section deals with data transformation:</font>
 
 Will transform  data to stablize variances/normalize data.
