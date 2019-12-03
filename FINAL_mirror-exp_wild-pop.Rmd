@@ -138,14 +138,17 @@ var.test(p_latRE$TOT.PROP, PFORM_RE$TOT.PROP, alternative = "less")
 library(ggplot2)
 library(ggsignif)
 library(gridExtra)
+library(ggthemes)
 
 OG_pref_RE <- rbind(p_latRE, p_formRE)
 
 OR_pref_RE <- rbind(p_latRE, PFORM_RE)
 
-orig <- ggplot(OG_pref_RE, aes(x=X.U.FEFF.SPP, y=TOT.PROP)) + geom_boxplot(outlier.colour = "red", outlier.shape = 8, outlier.size = 2) + xlab("Species") + ylab("Preference score") + ggtitle("Original Data") 
+orig <- ggplot(OG_pref_RE, aes(x=X.U.FEFF.SPP, y=TOT.PROP)) + geom_boxplot(outlier.colour = "red", outlier.shape = 8, outlier.size = 2) + xlab("Species") + ylab("Proportion of left-eye bias") + ggtitle("Original Data") + theme_classic()
 
-rem_out <- ggplot(OR_pref_RE, aes(x=X.U.FEFF.SPP, y=TOT.PROP)) + geom_boxplot() + xlab("Species") + ylab("Preference score") + ggtitle("Outlier-Removed Data")
+rem_out <- ggplot(OR_pref_RE, aes(x=X.U.FEFF.SPP, y=TOT.PROP)) + geom_boxplot() + xlab("Species") + ylab("Proportion of left-eye bias") + ggtitle("Outlier-Removed Data") + theme_classic()
+
+rem_out
 
 grid.arrange(orig, rem_out, ncol=2)
 
