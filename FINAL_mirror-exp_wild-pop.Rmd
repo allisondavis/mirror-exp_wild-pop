@@ -24,7 +24,7 @@ rawRE <- curl("https://raw.githubusercontent.com/allisondavis/mirror-exp_wild-po
 
 rawRE <- read.csv(rawRE, header = TRUE, sep = ",", stringsAsFactors = TRUE)
 
-prefRE <- curl("https://raw.githubusercontent.com/allisondavis/mirror-exp_wild-pop/master/adavis_mirror-exp_wild-pop_rescored-prefs.csv")
+prefRE <- curl("https://raw.githubusercontent.com/allisondavis/mirror-exp_wild-pop/master/adavis_mirror-exp_wild-pop_rescored-props_common.csv")
 
 prefRE <- read.csv(prefRE, header = TRUE, sep = ",", stringsAsFactors = TRUE)
 
@@ -35,10 +35,10 @@ p_form.rawRE <- rawRE[rawRE$X.U.FEFF.SPP =="P.form",]
 
 p_lat.rawRE <- rawRE[rawRE$X.U.FEFF.SPP == "P.lat",]
 
-p_formRE <- prefRE[prefRE$X.U.FEFF.SPP== "P.form",]
+p_formRE <- prefRE[prefRE$X.U.FEFF.SPP== "Amazon",]
 
 
-p_latRE <- prefRE[prefRE$X.U.FEFF.SPP== "P.lat",]
+p_latRE <- prefRE[prefRE$X.U.FEFF.SPP== "Sailfin",]
 
 ```
 
