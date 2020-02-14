@@ -184,3 +184,54 @@ grid.arrange(orig, rem_out, ncol=2)
 
 
 ```
+
+
+#### <font color="deepskyblue">Consistency in eye use across trials </font>
+
+Here I will examine if individuals were consistent with their eye preference across the two trials.
+  * Since formosa were the only ones w/lateralized vision, this is more pertinent to them
+    + if they are lateralized, as clones, they should also be consistent in their lateralization across trials. If they are no consistent, this might mean that the significance we see with their lateralized vision, might just be a statistically chance.
+  * would be interesting to see if individuals are still consistent among trials, but overall no spp lateralization for latipinna
+
+I will be using `cor.test(x,y,method="pearson", "kendall", "spearman")`
+  * can also add `use="complete.obs"` if I have missing values 
+  
+  
+```{r echo=FALSE}
+library(ggpubr)
+
+cor.test(p_latRE$A.PROP, p_latRE$B.PROP, method ="pearson")
+
+cor.test(PFORM_RE$A.PROP, PFORM_RE$B.PROP, method = "pearson")
+
+```
+
+<font color="darkorchid4"> Looks like neither correlation is significant. I will visualize using a scatter plot below.</font>
+
+```{r echo=FALSE}
+lat_cor <- ggscatter(p_latRE, x = "A.PROP", y = "B.PROP", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Eye pref in A tank", ylab = "Eye pref in B tank", title = "Sailfin")
+
+
+form_cor <- ggscatter(PFORM_RE, x = "A.PROP", y = "B.PROP", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Eye pref in A tank", ylab = "Eye pref in B tank", title = "Amazon")
+
+grid.arrange(lat_cor, form_cor, ncol=2)
+
+```
+
+
+
+<font color="blue"> Correlation implication:</font> With both correlations as insignificant, this means that there was no consistent eye use across trials. 
+  * Some form individuals who expressed left eye bias in A did express left eye bias in B, but the degree of bias was not that strong. ***Is there a way to transform data in which I look at whether or not they were left-eye period vs right-eye (like it doesn't matter their actual value, just if it's above 0.5 it's left)? Will this tell me anything differently?***
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
