@@ -16,6 +16,8 @@ knitr::opts_chunk$set(echo = TRUE)
       - combo score determined as left/(left+right) for total left and right occurances
       - average score determined by averaging tank A pref score and tank B pref score
   * separated all data by species
+  * original analyses w/20 individuals showed a significant difference between using the TOT.PROP vs AVG.PROP for latipinna only; for all tests, will repeat with AVG.PROP to see if this changes the results
+    + <font color ="darkorchid4"> Tests includind AVG.PROP in place of TOT.PROP don't really change the values of the statistical tests. Will coninue with TOT.PROP.</font>
 
 ```{r echo=FALSE}
 library(curl)
@@ -52,6 +54,12 @@ Histogram shows what appear to be outliers in both species. Will now perform a T
 library(DescTools)
 
 Outlier(p_latRE$TOT.PROP, method=c("boxplot"), value = FALSE)
+
+#repeat for avg.prop --> STILL NO OUTLIERS
+
+Outlier(p_latRE$AVG.PROP, method=c("boxplot"), value = FALSE)
+
+
 ```
 
 * Sailfin: no outliers
@@ -88,6 +96,11 @@ t.test(PFORM_RE$TOT.PROP, mu=0.5, alternative = "two.sided")
   
 ```{r echo=FALSE}
 t.test(p_latRE$TOT.PROP, mu=0.5, alternative = "two.sided")
+
+  #repeat for avg.prop
+
+t.test(p_latRE$AVG.PROP, mu=0.5, alternative = "two.sided")
+
 ```
 
 
@@ -99,24 +112,41 @@ t.test(p_latRE$TOT.PROP, mu=0.5, alternative = "two.sided")
 
 t.test(p_latRE$TOT.PROP, PFORM_RE$TOT.PROP)
 
+  #repeat w/avg.prop
+t.test(p_latRE$AVG.PROP, PFORM_RE$TOT.PROP)
+
 ```
 
    - variances: two-sided (either spp variance greater or less)
 
 ```{r echo=FALSE}
 var.test(p_latRE$TOT.PROP, PFORM_RE$TOT.PROP, alternative = "two.sided")
+
+    #repeat w/avg.prop
+
+var.test(p_latRE$AVG.PROP, PFORM_RE$TOT.PROP, alternative = "two.sided")
+
 ```
 
 - variances: greater (p.lat variance > p.form)
 
 ```{r echo=FALSE}
 var.test(p_latRE$TOT.PROP, PFORM_RE$TOT.PROP, alternative = "greater")
+
+    #repeat w/avg.prop
+
+var.test(p_latRE$AVG.PROP, PFORM_RE$TOT.PROP, alternative = "greater")
+
 ```
 
 - variances: lesser(p.lat variance < p.form)
 
 ```{r echo=FALSE}
 var.test(p_latRE$TOT.PROP, PFORM_RE$TOT.PROP, alternative = "less")
+
+    #repeat w/avg.prop
+
+var.test(p_latRE$AVG.PROP, PFORM_RE$TOT.PROP, alternative = "less")
 
 
 ```
