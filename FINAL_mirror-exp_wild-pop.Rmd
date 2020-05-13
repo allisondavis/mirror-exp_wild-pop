@@ -44,8 +44,9 @@ p_latRE <- prefRE[prefRE$X.U.FEFF.SPP== "Sailfin",]
 
 ```
 
+### Analyses {.tabset .tabset-fade .tabset-pills}
 
-#### <font color="deepskyblue">Outlier tests</font>
+#### Outlier tests
 
 Histogram shows what appear to be outliers in both species. Will now perform a Tukey's outlier test to see if they are in fact outlier, and if removing these outliers changes the variance between species.
 
@@ -80,16 +81,18 @@ Outlier(p_formRE$TOT.PROP, method =c("boxplot"), value = FALSE)
 
 <font color="darkorchid4">Looks like there are four outlier in the formosa data, but no outliers in the latipinna data.</font>
 
-#### I will create a new dataframe without these rows, and test for eye preference and compare variation again.
+#### T-tests
+I will create a new dataframe without these rows, and test for eye preference and compare variation again.
 
 ```{r echo=FALSE}
 PFORM_RE <- p_formRE[-c(2,3,11,19),]
 ```
-* t-test for eye preference
+* t-test for eye preference 
     - Amazons:
 
 ```{r echo=FALSE}
 t.test(PFORM_RE$TOT.PROP, mu=0.5, alternative = "two.sided")
+
 ```
 
   - Sailfins
@@ -97,12 +100,14 @@ t.test(PFORM_RE$TOT.PROP, mu=0.5, alternative = "two.sided")
 ```{r echo=FALSE}
 t.test(p_latRE$TOT.PROP, mu=0.5, alternative = "two.sided")
 
+
   #repeat for avg.prop
 
 t.test(p_latRE$AVG.PROP, mu=0.5, alternative = "two.sided")
 
 ```
 
+<font color="darkorchid4"> Amazons show left-eye bias, but sailfins show no eye bias.</font>
 
 * comparing species
 
@@ -117,7 +122,73 @@ t.test(p_latRE$AVG.PROP, PFORM_RE$TOT.PROP)
 
 ```
 
-   - variances: two-sided (either spp variance greater or less)
+<font color="darkorchid4"> The species don't significantly differ in average eye use.</font>
+
+
+#### Wilcox tests
+Since we're dealing with proportions, I will use Wilcox signed rank and rank sum tests to re-analyze the data
+
+* Tank differences
+```{r}
+library(curl)
+
+rawTANKS <- curl("https://raw.githubusercontent.com/allisondavis/mirror-exp_wild-pop/master/adavis_mirrorexp-tanks.csv")
+
+rawTANKS <- read.csv(rawTANKS, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+
+wilcox.test(PROP~TANK, data = rawTANKS, paired=TRUE)
+
+FrawTANKS <- rawTANKS[rawTANKS$X.U.FEFF.SPP == "P.form",]
+LrawTANKS <- rawTANKS[rawTANKS$X.U.FEFF.SPP == "P.lat", ]
+
+wilcox.test(PROP~TANK, data = FrawTANKS, paired=TRUE)
+wilcox.test(PROP~TANK, data = LrawTANKS, paired=TRUE)
+
+```
+
+<font color="darkorchid4"> No differences between the tanks, so I can analyze with total proportion.</font>
+
+
+* Eye preference
+  - Amazons:
+
+```{r echo=FALSE}
+
+wilcox.test(PFORM_RE$TOT.PROP, mu=0.5)
+
+```
+
+  - Sailfins
+  
+```{r echo=FALSE}
+
+wilcox.test(p_latRE$TOT.PROP, mu=0.5)
+
+  #repeat for avg.prop
+
+wilcox.test(p_latRE$AVG.PROP, mu=0.5)
+
+```
+
+<font color="darkorchid4"> Amazons still have left-eye bias and sailfins still have no eye bias.</font>
+
+* comparing species
+
+```{r}
+
+raw2 <- rbind(p_latRE, PFORM_RE)
+
+wilcox.test(TOT.PROP~X.U.FEFF.SPP, data = raw2, paired=FALSE)
+
+```
+
+<font color="darkorchid4"> Species still don't significantly differ in average eye use.</font>
+
+
+
+#### Variance
+
+variances: two-sided (either spp variance greater or less)
 
 ```{r echo=FALSE}
 var.test(p_latRE$TOT.PROP, PFORM_RE$TOT.PROP, alternative = "two.sided")
@@ -160,7 +231,9 @@ var.test(p_latRE$AVG.PROP, PFORM_RE$TOT.PROP, alternative = "less")
   
   * <font color="blue">For variance comparison:</font> by removing the outliers, the results show a higher amount of variation in sailfins as compared to amazons.</font>
 
-#### <font color="chocolate3">Will create boxplots using both the original, and outlier-removed data</font>
+#### Boxplots
+
+<font color="chocolate3">Will create boxplots using both the original, and outlier-removed data</font>
 
   * Will combine the total preference scores of both original and outlier-removed data into one dataset in order to use ggplot more easily.
   
@@ -186,7 +259,9 @@ grid.arrange(orig, rem_out, ncol=2)
 ```
 
 
-#### <font color="deepskyblue">Consistency in eye use across trials </font>
+#### Repeatability
+
+<font color="deepskyblue">Consistency in eye use across trials </font>
 
 Here I will examine if individuals were consistent with their eye preference across the two trials.
   * Since formosa were the only ones w/lateralized vision, this is more pertinent to them
