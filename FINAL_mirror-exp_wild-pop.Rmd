@@ -271,6 +271,31 @@ var.test(PL_trans$TOT.PROP, PF_trans$TOT.PROP, alternative = "less")
 
 ```
 
+#### Kruskal-Wallis
+
+From my understanding, the Kruskal-Wallis test is similar to the Mann Whitney U/Wilcox rank sum test in that it is a non-parametric test using ranks of values to test differences in medians between groups. Only difference (I can see) is that Kruskal is used more when comparing 3+ groups, whereas MWU is for 2 groups.
+
+A squared rank test is a non-parametric version of the F-test (I think), in which it is seeing whether the variance/distribution in rank is different between groups. Does a bunch of pairwise comparisons (need to look up more what that means). Often used as a posthoc test after the null is rejected in a Kruskal-Wallis.
+
+Going to try the Kruskal-Wallis and squared rank test on my non-transformed data.
+
+```{r}
+library(PMCMR)
+
+kruskal.test(TOT.PROP~X.U.FEFF.SPP, data = raw2)
+
+posthoc.kruskal.conover.test(TOT.PROP~X.U.FEFF.SPP, data = raw2)
+
+
+library(conover.test)
+
+conover.test(raw2$TOT.PROP, raw2$X.U.FEFF.SPP, altp = TRUE)
+
+```
+
+
+<font color="darkorchid4"> Not sure this is giving me what I'm looking for. Seems this p-value is the same as the p-value given with the Mann Whitney U test comparing the species. Don't think this is then testing for differences in variation.</font>
+
 
 #### Boxplots
 
