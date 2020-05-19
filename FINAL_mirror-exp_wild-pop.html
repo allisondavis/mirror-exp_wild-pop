@@ -470,14 +470,6 @@ wilcox.test(TOT.PROP~X.U.FEFF.SPP, data = raw2, paired=FALSE)</code></pre>
 <ul>
 <li>transform the data</li>
 </ul>
-<pre class="r"><code>library(car)</code></pre>
-<pre><code>## Warning: package 'car' was built under R version 3.5.3</code></pre>
-<pre><code>## Loading required package: carData</code></pre>
-<pre><code>## 
-## Attaching package: 'car'</code></pre>
-<pre><code>## The following object is masked from 'package:DescTools':
-## 
-##     Recode</code></pre>
 <pre class="r"><code>PL_trans &lt;- transform(p_latRE, arcTOT = asin(p_latRE$TOT.PROP))
 
 PF_trans &lt;- transform(PFORM_RE, arcTOT = asin(PFORM_RE$TOT.PROP))</code></pre>
@@ -562,6 +554,52 @@ PF_trans &lt;- transform(PFORM_RE, arcTOT = asin(PFORM_RE$TOT.PROP))</code></pre
 ## sample estimates:
 ## ratio of variances 
 ##             5.2036</code></pre>
+</div>
+<div id="kruskal-wallis" class="section level4">
+<h4>Kruskal-Wallis</h4>
+<p>From my understanding, the Kruskal-Wallis test is similar to the Mann Whitney U/Wilcox rank sum test in that it is a non-parametric test using ranks of values to test differences in medians between groups. Only difference (I can see) is that Kruskal is used more when comparing 3+ groups, whereas MWU is for 2 groups.</p>
+<p>A squared rank test is a non-parametric version of the F-test (I think), in which it is seeing whether the variance/distribution in rank is different between groups. Does a bunch of pairwise comparisons (need to look up more what that means). Often used as a posthoc test after the null is rejected in a Kruskal-Wallis.</p>
+<p>Going to try the Kruskal-Wallis and squared rank test on my non-transformed data.</p>
+<pre class="r"><code>library(PMCMR)</code></pre>
+<pre><code>## Warning: package 'PMCMR' was built under R version 3.5.3</code></pre>
+<pre><code>## PMCMR is superseded by PMCMRplus and will be no longer maintained. You may wish to install PMCMRplus instead.</code></pre>
+<pre class="r"><code>kruskal.test(TOT.PROP~X.U.FEFF.SPP, data = raw2)</code></pre>
+<pre><code>## 
+##  Kruskal-Wallis rank sum test
+## 
+## data:  TOT.PROP by X.U.FEFF.SPP
+## Kruskal-Wallis chi-squared = 2.3351, df = 1, p-value = 0.1265</code></pre>
+<pre class="r"><code>posthoc.kruskal.conover.test(TOT.PROP~X.U.FEFF.SPP, data = raw2)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using Conover's-test for multiple  
+##                          comparisons of independent samples 
+## 
+## data:  TOT.PROP by X.U.FEFF.SPP 
+## 
+##         Amazon
+## Sailfin 0.13  
+## 
+## P value adjustment method: holm</code></pre>
+<pre class="r"><code>library(conover.test)
+
+conover.test(raw2$TOT.PROP, raw2$X.U.FEFF.SPP, altp = TRUE)</code></pre>
+<pre><code>##   Kruskal-Wallis rank sum test
+## 
+## data: x and group
+## Kruskal-Wallis chi-squared = 2.3351, df = 1, p-value = 0.13
+## 
+## 
+##                            Comparison of x by group                            
+##                                 (No adjustment)                                
+## Col Mean-|
+## Row Mean |     Amazon
+## ---------+-----------
+##  Sailfin |   1.559032
+##          |     0.1282
+## 
+## alpha = 0.05
+## Reject Ho if p &lt;= alpha</code></pre>
+<p><font color="darkorchid4"> Not sure this is giving me what I’m looking for. Seems this p-value is the same as the p-value given with the Mann Whitney U test comparing the species. Don’t think this is then testing for differences in variation.</font></p>
 </div>
 <div id="boxplots" class="section level4">
 <h4>Boxplots</h4>
