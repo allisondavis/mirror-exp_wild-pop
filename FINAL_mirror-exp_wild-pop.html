@@ -470,9 +470,47 @@ wilcox.test(TOT.PROP~X.U.FEFF.SPP, data = raw2, paired=FALSE)</code></pre>
 <ul>
 <li>transform the data</li>
 </ul>
-<pre class="r"><code>PL_trans &lt;- transform(p_latRE, arcTOT = asin(p_latRE$TOT.PROP))
+<pre class="r"><code>PL_transA &lt;- transform(p_latRE, arcA = asin(p_latRE$A.PROP))
+
+PF_transA &lt;- transform(PFORM_RE, arcA = asin(PFORM_RE$A.PROP))
+
+
+PL_transB &lt;- transform(p_latRE, arcB = asin(p_latRE$B.PROP))
+
+PF_transB &lt;- transform(PFORM_RE, arcB = asin(PFORM_RE$B.PROP))
+
+
+PL_trans &lt;- transform(p_latRE, arcTOT = asin(p_latRE$TOT.PROP))
 
 PF_trans &lt;- transform(PFORM_RE, arcTOT = asin(PFORM_RE$TOT.PROP))</code></pre>
+<ul>
+<li>t-tests: tank differences</li>
+</ul>
+<pre class="r"><code>t.test(PL_transA$arcA, PL_transB$arcB, paired = TRUE, alternative = &quot;two.sided&quot;)</code></pre>
+<pre><code>## 
+##  Paired t-test
+## 
+## data:  PL_transA$arcA and PL_transB$arcB
+## t = -0.89858, df = 19, p-value = 0.3801
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -0.09207910  0.03676391
+## sample estimates:
+## mean of the differences 
+##             -0.02765759</code></pre>
+<pre class="r"><code>t.test(PF_transA$arcA, PF_transB$arcB, paired = TRUE, alternative = &quot;two.sided&quot;)</code></pre>
+<pre><code>## 
+##  Paired t-test
+## 
+## data:  PF_transA$arcA and PF_transB$arcB
+## t = -0.36857, df = 15, p-value = 0.7176
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -0.05394144  0.03803647
+## sample estimates:
+## mean of the differences 
+##            -0.007952484</code></pre>
+<p><font color="darkorchid4"> Still no differences between the tanks.</font></p>
 <ul>
 <li>t-tests: eye preference</li>
 </ul>
@@ -500,6 +538,7 @@ PF_trans &lt;- transform(PFORM_RE, arcTOT = asin(PFORM_RE$TOT.PROP))</code></pre
 ## sample estimates:
 ## mean of x 
 ## 0.5182296</code></pre>
+<p><font color="darkorchid4"> Sailfin still with no significant eye preference, and amazon with significant left-eye bias.</font></p>
 <ul>
 <li>t-tests: comparing species</li>
 </ul>
@@ -515,6 +554,7 @@ PF_trans &lt;- transform(PFORM_RE, arcTOT = asin(PFORM_RE$TOT.PROP))</code></pre
 ## sample estimates:
 ## mean of x mean of y 
 ## 0.5122196 0.5182296</code></pre>
+<p><font color="darkorchid4"> Still no difference in average eye use between the species.</font></p>
 <ul>
 <li>variance:</li>
 </ul>
@@ -554,6 +594,7 @@ PF_trans &lt;- transform(PFORM_RE, arcTOT = asin(PFORM_RE$TOT.PROP))</code></pre
 ## sample estimates:
 ## ratio of variances 
 ##             5.2036</code></pre>
+<p><font color="darkorchid4"> Sailfin still with significantly more variation than amazons.</font></p>
 </div>
 <div id="kruskal-wallis" class="section level4">
 <h4>Kruskal-Wallis</h4>

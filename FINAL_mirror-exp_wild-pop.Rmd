@@ -231,12 +231,35 @@ Since the preference is a proportion, parametric tests may be the incorrect form
 
 ```{r}
 
+PL_transA <- transform(p_latRE, arcA = asin(p_latRE$A.PROP))
+
+PF_transA <- transform(PFORM_RE, arcA = asin(PFORM_RE$A.PROP))
+
+
+PL_transB <- transform(p_latRE, arcB = asin(p_latRE$B.PROP))
+
+PF_transB <- transform(PFORM_RE, arcB = asin(PFORM_RE$B.PROP))
+
+
 PL_trans <- transform(p_latRE, arcTOT = asin(p_latRE$TOT.PROP))
 
 PF_trans <- transform(PFORM_RE, arcTOT = asin(PFORM_RE$TOT.PROP))
 
 ```
 
+  * t-tests: tank differences
+
+```{r}
+
+t.test(PL_transA$arcA, PL_transB$arcB, paired = TRUE, alternative = "two.sided")
+
+t.test(PF_transA$arcA, PF_transB$arcB, paired = TRUE, alternative = "two.sided")
+
+
+```
+
+<font color="darkorchid4"> Still no differences between the tanks.</font> 
+ 
   * t-tests: eye preference
 
 ```{r}
@@ -248,6 +271,7 @@ t.test(PF_trans$TOT.PROP, mu=0.5, alternative = "two.sided")
 
 ```
 
+<font color="darkorchid4"> Sailfin still with no significant eye preference, and amazon with significant left-eye bias.</font>
 
   * t-tests: comparing species
 
@@ -257,6 +281,8 @@ t.test(PL_trans$TOT.PROP, PF_trans$TOT.PROP)
 
 
 ```
+
+<font color="darkorchid4"> Still no difference in average eye use between the species.</font>
 
   * variance:
 
@@ -270,6 +296,9 @@ var.test(PL_trans$TOT.PROP, PF_trans$TOT.PROP, alternative = "less")
 
 
 ```
+
+<font color="darkorchid4"> Sailfin still with significantly more variation than amazons.</font>
+
 
 #### Kruskal-Wallis
 
