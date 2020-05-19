@@ -223,13 +223,54 @@ var.test(p_latRE$AVG.PROP, PFORM_RE$TOT.PROP, alternative = "less")
 ```
 
 
-<font color="firebrick">By removing the outliers, I get significant results for certain tests.</font>
+#### Transformations
 
-  * <font color="blue">For lateralized vision:</font> the p value is now significant in amazons, and the mean is 0.5182296; this suggests that the amazons are slightly left-eye lateralized for viewing conspecifics.</font>
+Since the preference is a proportion, parametric tests may be the incorrect form of analyses. While there is a non-parametric alternative to the t-test (Wilcox tests), I cannot seem to find an alterantive to the F-test. Upon Mike's suggestion, I'll do an arcsine transformation on the total proportion data. I will then re-run the t-tests and F-tests with this new data.
 
-  * <font color="blue">Sailfins remain non-significant in ther visual lateralization. Additionally, the means of both species do not differ significantly.</font>
-  
-  * <font color="blue">For variance comparison:</font> by removing the outliers, the results show a higher amount of variation in sailfins as compared to amazons.</font>
+   * transform the data
+
+```{r}
+
+PL_trans <- transform(p_latRE, arcTOT = asin(p_latRE$TOT.PROP))
+
+PF_trans <- transform(PFORM_RE, arcTOT = asin(PFORM_RE$TOT.PROP))
+
+```
+
+  * t-tests: eye preference
+
+```{r}
+
+t.test(PL_trans$TOT.PROP, mu=0.5, alternative = "two.sided")
+
+t.test(PF_trans$TOT.PROP, mu=0.5, alternative = "two.sided")
+
+
+```
+
+
+  * t-tests: comparing species
+
+```{r}
+
+t.test(PL_trans$TOT.PROP, PF_trans$TOT.PROP)
+
+
+```
+
+  * variance:
+
+```{r}
+
+var.test(PL_trans$TOT.PROP, PF_trans$TOT.PROP, alternative = "two.sided")
+
+var.test(PL_trans$TOT.PROP, PF_trans$TOT.PROP, alternative = "greater")
+
+var.test(PL_trans$TOT.PROP, PF_trans$TOT.PROP, alternative = "less")
+
+
+```
+
 
 #### Boxplots
 

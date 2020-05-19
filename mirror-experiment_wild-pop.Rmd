@@ -127,7 +127,7 @@ t.test(p_lat$TOT.PROP, p_lat$AVG.PROP)
 t.test(p_form$TOT.PROP, p_form$AVG.PROP)
 
 ```
-  - nope! Appear to be pretty much the same. <font color="red">After repeating analyses with 20 of each species, appears there is a difference between the combo preference and the averaged preference.</font>
+  - nope! Appear to be pretty much the same. <font color="red">After repeating analyses with 20 of each species, appears there is a difference between the combo preference and the averaged preference for latipinna only. **Will repeat all analyses using both total and average to see if there's a difference.**</font>
 
 #### <font color="blue">Eye preference for each species</font>
   * I will look at each species individually to see if they preferencially use their left or right visual field for conspecific/self inspection.
@@ -138,6 +138,10 @@ t.test(p_form$TOT.PROP, p_form$AVG.PROP)
 t.test(p_lat$TOT.PROP, mu=0.5, alternative = "two.sided")
 
 t.test(p_form$TOT.PROP, mu=0.5, alternative = "two.sided")
+
+#repeated using lat avg.prop --> STILL NOT SIGNIFICANT
+
+t.test(p_lat$AVG.PROP, mu=0.5, alternative = "two.sided")
 
 ```
   - <font color="green">Neither sailfin or amazons show significant lateralization of vision.</font> 
@@ -156,6 +160,11 @@ hist(p_form$TOT.PROP)
 ```{r}
 
 t.test(p_lat$TOT.PROP, p_form$TOT.PROP)
+
+#repeat with lat avg.prop --> STILL NOT SIGNIFICANT
+
+t.test(p_lat$AVG.PROP, p_form$TOT.PROP)
+
 ```
   
    - T test may not be correct test, as it compares means and not variances. Still, not significant differences. 
@@ -165,8 +174,14 @@ t.test(p_lat$TOT.PROP, p_form$TOT.PROP)
 ```{r}
 #two-sided is predicting that the variances could be either greater or less
 var.test(p_lat$TOT.PROP, p_form$TOT.PROP, alternative = "two.sided")
+    
+    #repeat w/ avg. prop
+var.test(p_lat$AVG.PROP, p_form$TOT.PROP, alternative = "two.sided")
 
 #greater is predicting that variance of p.lat will be greater than p.form
+var.test(p_lat$TOT.PROP, p_form$TOT.PROP, alternative = "greater")
+
+    #reapeat w/avg. prop
 var.test(p_lat$TOT.PROP, p_form$TOT.PROP, alternative = "greater")
 
 #less is predicting that variance of p.lat will be less than p.form
@@ -227,7 +242,7 @@ PL_raw <- raw[raw$X.U.FEFF.SPP == "P.lat",]
 PF_raw <- raw[raw$X.U.FEFF.SPP == "P.form",]
 
 
-PL_raw <- transform(PL_raw, acLeft = arcsine(PL_raw$TOT.LEFT))
+PL_raw <- transform(PL_raw, acLeft = asin(PL_raw$TOT.PROP))
 
 ```
   

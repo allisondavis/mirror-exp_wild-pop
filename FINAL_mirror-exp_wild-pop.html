@@ -463,12 +463,105 @@ wilcox.test(TOT.PROP~X.U.FEFF.SPP, data = raw2, paired=FALSE)</code></pre>
 ## sample estimates:
 ## ratio of variances 
 ##           4.952018</code></pre>
-<p><font color="firebrick">By removing the outliers, I get significant results for certain tests.</font></p>
+</div>
+<div id="transformations" class="section level4">
+<h4>Transformations</h4>
+<p>Since the preference is a proportion, parametric tests may be the incorrect form of analyses. While there is a non-parametric alternative to the t-test (Wilcox tests), I cannot seem to find an alterantive to the F-test. Upon Mike’s suggestion, I’ll do an arcsine transformation on the total proportion data. I will then re-run the t-tests and F-tests with this new data.</p>
 <ul>
-<li><p><font color="blue">For lateralized vision:</font> the p value is now significant in amazons, and the mean is 0.5182296; this suggests that the amazons are slightly left-eye lateralized for viewing conspecifics.</font></p></li>
-<li><p><font color="blue">Sailfins remain non-significant in ther visual lateralization. Additionally, the means of both species do not differ significantly.</font></p></li>
-<li><p><font color="blue">For variance comparison:</font> by removing the outliers, the results show a higher amount of variation in sailfins as compared to amazons.</font></p></li>
+<li>transform the data</li>
 </ul>
+<pre class="r"><code>library(car)</code></pre>
+<pre><code>## Warning: package 'car' was built under R version 3.5.3</code></pre>
+<pre><code>## Loading required package: carData</code></pre>
+<pre><code>## 
+## Attaching package: 'car'</code></pre>
+<pre><code>## The following object is masked from 'package:DescTools':
+## 
+##     Recode</code></pre>
+<pre class="r"><code>PL_trans &lt;- transform(p_latRE, arcTOT = asin(p_latRE$TOT.PROP))
+
+PF_trans &lt;- transform(PFORM_RE, arcTOT = asin(PFORM_RE$TOT.PROP))</code></pre>
+<ul>
+<li>t-tests: eye preference</li>
+</ul>
+<pre class="r"><code>t.test(PL_trans$TOT.PROP, mu=0.5, alternative = &quot;two.sided&quot;)</code></pre>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  PL_trans$TOT.PROP
+## t = 0.83192, df = 19, p-value = 0.4158
+## alternative hypothesis: true mean is not equal to 0.5
+## 95 percent confidence interval:
+##  0.4814764 0.5429627
+## sample estimates:
+## mean of x 
+## 0.5122196</code></pre>
+<pre class="r"><code>t.test(PF_trans$TOT.PROP, mu=0.5, alternative = &quot;two.sided&quot;)</code></pre>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  PF_trans$TOT.PROP
+## t = 2.5322, df = 15, p-value = 0.02299
+## alternative hypothesis: true mean is not equal to 0.5
+## 95 percent confidence interval:
+##  0.5028851 0.5335741
+## sample estimates:
+## mean of x 
+## 0.5182296</code></pre>
+<ul>
+<li>t-tests: comparing species</li>
+</ul>
+<pre class="r"><code>t.test(PL_trans$TOT.PROP, PF_trans$TOT.PROP)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  PL_trans$TOT.PROP and PF_trans$TOT.PROP
+## t = -0.36741, df = 27.234, p-value = 0.7162
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -0.03955983  0.02753982
+## sample estimates:
+## mean of x mean of y 
+## 0.5122196 0.5182296</code></pre>
+<ul>
+<li>variance:</li>
+</ul>
+<pre class="r"><code>var.test(PL_trans$TOT.PROP, PF_trans$TOT.PROP, alternative = &quot;two.sided&quot;)</code></pre>
+<pre><code>## 
+##  F test to compare two variances
+## 
+## data:  PL_trans$TOT.PROP and PF_trans$TOT.PROP
+## F = 5.2036, num df = 19, denom df = 15, p-value = 0.002202
+## alternative hypothesis: true ratio of variances is not equal to 1
+## 95 percent confidence interval:
+##   1.876498 13.618433
+## sample estimates:
+## ratio of variances 
+##             5.2036</code></pre>
+<pre class="r"><code>var.test(PL_trans$TOT.PROP, PF_trans$TOT.PROP, alternative = &quot;greater&quot;)</code></pre>
+<pre><code>## 
+##  F test to compare two variances
+## 
+## data:  PL_trans$TOT.PROP and PF_trans$TOT.PROP
+## F = 5.2036, num df = 19, denom df = 15, p-value = 0.001101
+## alternative hypothesis: true ratio of variances is greater than 1
+## 95 percent confidence interval:
+##  2.223932      Inf
+## sample estimates:
+## ratio of variances 
+##             5.2036</code></pre>
+<pre class="r"><code>var.test(PL_trans$TOT.PROP, PF_trans$TOT.PROP, alternative = &quot;less&quot;)</code></pre>
+<pre><code>## 
+##  F test to compare two variances
+## 
+## data:  PL_trans$TOT.PROP and PF_trans$TOT.PROP
+## F = 5.2036, num df = 19, denom df = 15, p-value = 0.9989
+## alternative hypothesis: true ratio of variances is less than 1
+## 95 percent confidence interval:
+##   0.00000 11.62517
+## sample estimates:
+## ratio of variances 
+##             5.2036</code></pre>
 </div>
 <div id="boxplots" class="section level4">
 <h4>Boxplots</h4>
