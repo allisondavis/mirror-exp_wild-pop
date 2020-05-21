@@ -144,6 +144,12 @@ LrawTANKS <- rawTANKS[rawTANKS$X.U.FEFF.SPP == "P.lat", ]
 wilcox.test(PROP~TANK, data = FrawTANKS, paired=TRUE)
 wilcox.test(PROP~TANK, data = LrawTANKS, paired=TRUE)
 
+
+#want to make sure outliers don't change this; Form outliers: Maeve, Cayenne, Gretchen, Sofia
+
+FrawTANKS_out <- FrawTANKS[-c(3,4,5,6,21,22,37,38),]
+wilcox.test(PROP~TANK, data = FrawTANKS_out, paired=TRUE)
+
 ```
 
 <font color="darkorchid4"> No differences between the tanks, so I can analyze with total proportion.</font>
