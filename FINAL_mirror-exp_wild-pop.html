@@ -368,6 +368,7 @@ wilcox.test(PROP~TANK, data = FrawTANKS_out, paired=TRUE)</code></pre>
 ## data:  PFORM_RE$TOT.PROP
 ## V = 114, p-value = 0.0155
 ## alternative hypothesis: true location is not equal to 0.5</code></pre>
+<pre><code>## [1] 0.5089774</code></pre>
 <ul>
 <li>Sailfins</li>
 </ul>
@@ -377,19 +378,21 @@ wilcox.test(PROP~TANK, data = FrawTANKS_out, paired=TRUE)</code></pre>
 ## data:  p_latRE$TOT.PROP
 ## V = 112, p-value = 0.8124
 ## alternative hypothesis: true location is not equal to 0.5</code></pre>
+<pre><code>## [1] 0.4894398</code></pre>
 <pre><code>## 
 ##  Wilcoxon signed rank test
 ## 
 ## data:  p_latRE$AVG.PROP
 ## V = 112, p-value = 0.8124
 ## alternative hypothesis: true location is not equal to 0.5</code></pre>
+<pre><code>## [1] 0.4894561</code></pre>
 <p><font color="darkorchid4"> Amazons still have left-eye bias and sailfins still have no eye bias.</font></p>
 <ul>
 <li>comparing species</li>
 </ul>
 <pre class="r"><code>raw2 &lt;- rbind(p_latRE, PFORM_RE)
 
-wilcox.test(TOT.PROP~X.U.FEFF.SPP, data = raw2, paired=FALSE)</code></pre>
+wilcox.test(TOT.PROP~X.U.FEFF.SPP, data = raw2, paired=FALSE, alternative = &quot;two.sided&quot;)</code></pre>
 <pre><code>## 
 ##  Wilcoxon rank sum test
 ## 

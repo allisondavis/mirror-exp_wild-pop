@@ -480,7 +480,7 @@ t.test(p_form$A.PROP, p_form$B.PROP)</code></pre>
 ## mean of x mean of y 
 ## 0.4892004 0.5432800</code></pre>
 <ul>
-<li>nope! Appear to be pretty much the same. <font color="red">After repeating analyses with 20 of each species, appears there is a difference between the combo preference and the averaged preference.</font></li>
+<li>nope! Appear to be pretty much the same. <font color="red">After repeating analyses with 20 of each species, appears there is a difference between the combo preference and the averaged preference for latipinna only. <strong>Will repeat all analyses using both total and average to see if there’s a difference.</strong></font></li>
 </ul>
 </div>
 <div id="eye-preference-for-each-species" class="section level4">
@@ -514,6 +514,20 @@ t.test(p_lat$TOT.PROP, mu=0.5, alternative = &quot;two.sided&quot;)</code></pre>
 ## sample estimates:
 ## mean of x 
 ## 0.4892004</code></pre>
+<pre class="r"><code>#repeated using lat avg.prop --&gt; STILL NOT SIGNIFICANT
+
+t.test(p_lat$AVG.PROP, mu=0.5, alternative = &quot;two.sided&quot;)</code></pre>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  p_lat$AVG.PROP
+## t = 3.1405, df = 19, p-value = 0.005386
+## alternative hypothesis: true mean is not equal to 0.5
+## 95 percent confidence interval:
+##  0.5343874 0.6718122
+## sample estimates:
+## mean of x 
+## 0.6030998</code></pre>
 <ul>
 <li><font color="green">Neither sailfin or amazons show significant lateralization of vision.</font></li>
 </ul>
@@ -542,6 +556,20 @@ t.test(p_lat$TOT.PROP, mu=0.5, alternative = &quot;two.sided&quot;)</code></pre>
 ## sample estimates:
 ## mean of x mean of y 
 ## 0.5174998 0.4892004</code></pre>
+<pre class="r"><code>#repeat with lat avg.prop --&gt; STILL NOT SIGNIFICANT
+
+t.test(p_lat$AVG.PROP, p_form$TOT.PROP)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  p_lat$AVG.PROP and p_form$TOT.PROP
+## t = 3.1222, df = 27.458, p-value = 0.0042
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  0.03910489 0.18869389
+## sample estimates:
+## mean of x mean of y 
+## 0.6030998 0.4892004</code></pre>
 <ul>
 <li><p>T test may not be correct test, as it compares means and not variances. Still, not significant differences.</p></li>
 <li><p><font color="deepskyblue">Will now do F-test: this will compare the variances of the two data sets.</font></p></li>
@@ -559,7 +587,33 @@ var.test(p_lat$TOT.PROP, p_form$TOT.PROP, alternative = &quot;two.sided&quot;)</
 ## sample estimates:
 ## ratio of variances 
 ##          0.7312541</code></pre>
+<pre class="r"><code>    #repeat w/ avg. prop
+var.test(p_lat$AVG.PROP, p_form$TOT.PROP, alternative = &quot;two.sided&quot;)</code></pre>
+<pre><code>## 
+##  F test to compare two variances
+## 
+## data:  p_lat$AVG.PROP and p_form$TOT.PROP
+## F = 4.2582, num df = 19, denom df = 19, p-value = 0.002737
+## alternative hypothesis: true ratio of variances is not equal to 1
+## 95 percent confidence interval:
+##   1.685439 10.758079
+## sample estimates:
+## ratio of variances 
+##           4.258178</code></pre>
 <pre class="r"><code>#greater is predicting that variance of p.lat will be greater than p.form
+var.test(p_lat$TOT.PROP, p_form$TOT.PROP, alternative = &quot;greater&quot;)</code></pre>
+<pre><code>## 
+##  F test to compare two variances
+## 
+## data:  p_lat$TOT.PROP and p_form$TOT.PROP
+## F = 0.73125, num df = 19, denom df = 19, p-value = 0.7492
+## alternative hypothesis: true ratio of variances is greater than 1
+## 95 percent confidence interval:
+##  0.3372552       Inf
+## sample estimates:
+## ratio of variances 
+##          0.7312541</code></pre>
+<pre class="r"><code>    #reapeat w/avg. prop
 var.test(p_lat$TOT.PROP, p_form$TOT.PROP, alternative = &quot;greater&quot;)</code></pre>
 <pre><code>## 
 ##  F test to compare two variances
@@ -681,8 +735,7 @@ PL_raw &lt;- raw[raw$X.U.FEFF.SPP == &quot;P.lat&quot;,]
 PF_raw &lt;- raw[raw$X.U.FEFF.SPP == &quot;P.form&quot;,]
 
 
-PL_raw &lt;- transform(PL_raw, acLeft = arcsine(PL_raw$TOT.LEFT))</code></pre>
-<pre><code>## Warning in asin(sqrt(p)): NaNs produced</code></pre>
+PL_raw &lt;- transform(PL_raw, acLeft = asin(PL_raw$TOT.PROP))</code></pre>
 <ul>
 <li><p>This works, in the sense of adding a new column to the existing dataframe with an applied funtion BUT arcsine of any number greater than pi will give a NA (which is what is happening here)</p></li>
 <li><p><font color="light blue">Will now try Levene’s test. This is similar to the F-test in the sense that it is comparing variances, but it does not assume normality.</font></p></li>
