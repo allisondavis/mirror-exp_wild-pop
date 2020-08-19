@@ -225,6 +225,48 @@ var.test(LAT_rawEX$LI.TOT, FORM_rawextra$LI.TOT, alternative = "two.sided")
 
 Transformations
 
+<font color="darkorchid4"> 19 AUG 2020: realized I was using the wrong value in the var test (was using just the lat index instead of the arcTOT (which was the arcsin transformed lat index values)). Because the arcsin test produced NAs for the laterality index, the variance was non-significant. To use arcsin transformation, all values must fall between 0 and 1. Will try a log transformation. The log of 0 and any negative number is undefined, so I will have to add a constant to all values, but to my understanding there is no upper limit.</font>
+
+
+
+* log transformation
+
+```{r}
+min(FORM_rawextra$LI.TOT) #-15.88448; will add 16 to all values
+min(LAT_rawEX$LI.TOT) #-41.13208; will add 42 to all values
+
+PFpos <- function(x) {x+16}
+LI_pos_PF <- lapply(FORM_rawextra$LI.TOT, PFpos)
+LI_pos_PF <- unlist(LI_pos_PF)
+FORM_rawextra <- cbind(FORM_rawextra, LI_pos_PF)
+
+PLpos <- function(x) {x+42}
+LI_pos_PL <- lapply(LAT_rawEX$LI.TOT, PLpos)
+LI_pos_PL <- unlist(LI_pos_PL)
+LAT_rawEX <- cbind(LAT_rawEX, LI_pos_PL)
+
+PL_trans4 <- transform(LAT_rawEX, LOG = log(LAT_rawEX$LI_pos_PL))
+
+PF_trans4 <- transform(FORM_rawextra, LOG = log(FORM_rawextra$LI_pos_PF))
+
+var.test(PL_trans4$LOG, PF_trans4$LOG, alternative = "two.sided")
+var.test(PL_trans4$LOG, PF_trans4$LOG, alternative = "greater")
+var.test(PL_trans4$LOG, PF_trans4$LOG, alternative = "less")
+
+
+
+PL_trans5 <- transform(LAT_rawEX, LOG = log(LAT_rawEX$TOT.PROP))
+
+PF_trans5 <- transform(FORM_rawextra, LOG = log(FORM_rawextra$TOT.PROP))
+
+var.test(PL_trans5$LOG, PF_trans5$LOG, alternative = "two.sided")
+var.test(PL_trans5$LOG, PF_trans5$LOG, alternative = "greater")
+var.test(PL_trans5$LOG, PF_trans5$LOG, alternative = "less")
+
+
+
+```
+
  * transform the data WITH LAT INDEX
 
 ```{r}
@@ -236,15 +278,15 @@ PF_trans3 <- transform(FORM_rawextra, arcTOT = asin(FORM_rawextra$LI.TOT))
 ```
 
 
-  * variance WITH LAT INDEX: p is .007
+  * variance WITH LAT INDEX: p is .007; **arcTOT is not significant because of NAs produced
 
 ```{r}
 
-var.test(PL_trans3$LI.TOT, PF_trans3$LI.TOT, alternative = "two.sided")
+var.test(PL_trans3$arcTOT, PF_trans3$arcTOT, alternative = "two.sided")
 
-var.test(PL_trans3$LI.TOT, PF_trans3$LI.TOT, alternative = "greater")
+var.test(PL_trans3$arcTOT, PF_trans3$arcTOT, alternative = "greater")
 
-var.test(PL_trans3$LI.TOT, PF_trans3$LI.TOT, alternative = "less")
+var.test(PL_trans3$arcTOT, PF_trans3$arcTOT, alternative = "less")
 
 
 ```
@@ -265,9 +307,9 @@ PL_transB2 <- transform(LAT_rawEX, arcB = asin(LAT_rawEX$B.PROP))
 PF_transB2 <- transform(FORM_rawextra, arcB = asin(FORM_rawextra$B.PROP))
 
 
-PL_trans2 <- transform(LAT_rawEX, arcTOT = asin(LAT_rawEX$TOT.PROP))
+PL_trans2 <- transform(LAT_rawEX, arcTOT2 = asin(LAT_rawEX$TOT.PROP))
 
-PF_trans2 <- transform(FORM_rawextra, arcTOT = asin(FORM_rawextra$TOT.PROP))
+PF_trans2 <- transform(FORM_rawextra, arcTOT2 = asin(FORM_rawextra$TOT.PROP))
 
 ```
 
@@ -312,7 +354,7 @@ t.test(PL_trans2$TOT.PROP, PF_trans2$TOT.PROP)
 
 ```{r}
 
-var.test(PL_trans2$TOT.PROP, PF_trans2$TOT.PROP, alternative = "two.sided")
+var.test(PL_trans2$arcTOT2, PF_trans2$arcTOT2, alternative = "two.sided")
 
 var.test(PL_trans2$TOT.PROP, PF_trans2$TOT.PROP, alternative = "greater")
 
