@@ -46,6 +46,272 @@ p_latRE <- prefRE[prefRE$X.U.FEFF.SPP== "Sailfin",]
 
 ### Analyses {.tabset .tabset-fade .tabset-pills}
 
+#### Final analysis
+
+Data
+
+```{r}
+library(curl)
+
+rawEX <- curl("https://raw.githubusercontent.com/allisondavis/mirror-exp_wild-pop/master/adavis_mirexp_wild_raw.csv")
+
+rawEX <- read.csv(rawEX, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+
+LAT_rawEX <- rawEX[rawEX$X.U.FEFF.SPP == "P.lat",]
+FORM_rawEX <- rawEX[rawEX$X.U.FEFF.SPP == "P.form",]
+
+tanksEX <- curl("https://raw.githubusercontent.com/allisondavis/mirror-exp_wild-pop/master/adavis_mirexp_wild_tanks.csv")
+
+tanksEX <- read.csv(tanksEX, header = TRUE, sep = ",", stringsAsFactors = TRUE)
+
+LAT_tankEX <- tanksEX[tanksEX$X.U.FEFF.SPP == "P.lat",]
+FORM_tankEX <- tanksEX[tanksEX$X.U.FEFF.SPP == "P.form",]
+
+```
+
+
+
+Outlier tests
+
+```{r, warning=FALSE}
+library(DescTools)
+
+Outlier(LAT_rawEX$LI.TOT, method=c("boxplot"), value = FALSE)
+
+Outlier(FORM_rawEX$LI.TOT, method=c("boxplot"), value = FALSE)
+
+```
+
+* Still no outliers for sailfin; four outliers for amazon (Cayenne, Gretchen, Sofia, Nyx)
+
+New Datasets
+
+```{r}
+FORM_rawextra <- FORM_rawEX[-c(3,11,19,23),]
+FORM_tankextra <- FORM_tankEX[-c(5,6,21,22,37,38,47,48),]
+
+rawextra <- rbind(LAT_rawEX, FORM_rawextra)
+tankextra <- rbind(LAT_tankEX, FORM_tankextra)
+
+test <- FORM_rawEX[-c(11),] #if I just remove Gretchen (who so far is the only one who doesn't move for >5min)
+
+```
+
+Variance: still significant (p=0.007, 95% CI 1.39-7.45); without gretchen only, it's not significant
+
+```{r}
+
+var.test(LAT_rawEX$LI.TOT, test$LI.TOT, alternative = "two.sided", conf.level = 0.95)
+
+
+```
+
+
+
+T- tests using LI instead of total proportion
+
+* tank differences: still none
+
+```{r}
+
+t.test(LAT_rawEX$LI.A, LAT_rawEX$LI.B, paired = TRUE, alternative = "two.sided")
+
+t.test(test$LI.A, test$LI.B, paired = TRUE, alternative = "two.sided")
+
+
+```
+
+
+* eye preferences: sailfin still no pref, amazon with pretty much no pref (p=0.055, 95% CI -5.78-0.062)
+
+```{r}
+
+t.test(LAT_rawEX$LI.TOT, mu=0, alternative = "two.sided")
+
+t.test(test$LI.TOT, mu=0, alternative = "two.sided")
+
+
+```
+
+
+* differences between spp: no differences in direction of laterality or overall laterality
+    - overall laterality: I took the absolute value of the index scores to see if one species was more lateralized overall (regardless of direction)
+
+```{r}
+
+t.test(LAT_rawEX$LI.TOT, test$LI.TOT)
+
+totLAT <- abs(LAT_rawEX$LI.TOT)
+totFORM1 <- abs(test$LI.TOT)
+
+t.test(totLAT, totFORM1)
+
+
+```
+
+***I will be following the methods described by a number of Bisazza papers in which a laterality index is calculated, and parametric tests are used. I will present a qqplot as well to check normality.***
+
+
+Variance: still significant (p=0.007, 95% CI 1.39-7.45)
+
+```{r}
+
+var.test(LAT_rawEX$LI.TOT, FORM_rawextra$LI.TOT, alternative = "two.sided", conf.level = 0.95)
+
+
+```
+
+
+
+T- tests using LI instead of total proportion
+
+* tank differences: still none
+
+```{r}
+
+t.test(LAT_rawEX$LI.A, LAT_rawEX$LI.B, paired = TRUE, alternative = "two.sided")
+
+t.test(FORM_rawextra$LI.A, FORM_rawextra$LI.B, paired = TRUE, alternative = "two.sided")
+
+
+```
+
+
+* eye preferences: sailfin still no pref, amazon with pretty much no pref (p=0.055, 95% CI -5.78-0.062)
+
+```{r}
+
+t.test(LAT_rawEX$LI.TOT, mu=0, alternative = "two.sided")
+
+t.test(FORM_rawextra$LI.TOT, mu=0, alternative = "two.sided")
+
+
+```
+
+
+* differences between spp: no differences in direction of laterality or overall laterality
+    - overall laterality: I took the absolute value of the index scores to see if one species was more lateralized overall (regardless of direction)
+
+```{r}
+
+t.test(LAT_rawEX$LI.TOT, FORM_rawextra$LI.TOT)
+
+totLAT <- abs(LAT_rawEX$LI.TOT)
+totFORM <- abs(FORM_rawextra$LI.TOT)
+
+t.test(totLAT, totFORM)
+
+
+```
+
+
+Visuals
+
+
+* Overview
+
+```{r, warning=FALSE}
+library(ggplot2)
+library(ggsignif)
+library(gridExtra)
+library(ggthemes)
+
+orig2 <- ggplot(rawEX, aes(x=X.U.FEFF.SPP, y=LI.TOT)) + geom_boxplot() + geom_point(color="gray75") + xlab("Species") + ylab("Laterality index") + ggtitle("Original Data") + theme_classic()
+
+orig2
+
+```
+
+* Overview with outlier removed
+
+```{r, warning=FALSE}
+library(ggplot2)
+library(ggsignif)
+library(gridExtra)
+library(ggthemes)
+
+
+rem_out2 <- ggplot(rawextra, aes(x=X.U.FEFF.SPP, y=LI.TOT)) + geom_boxplot() + geom_point(color="gray75") + xlab("Species") + ylab("Laterality index") + ggtitle("Outlier-Removed Data") + theme_classic()
+
+grid.arrange(orig2, rem_out2, ncol=2)
+
+```
+
+
+* Overview of eye use per species
+    - not sure what scale to use: min is -63, max is 27
+
+```{r}
+
+
+LATeye <- ggplot(LAT_tankEX, aes(x=TANK, y=LI.TOT))+ geom_boxplot() + geom_point(color="gray75") + scale_y_continuous(breaks = seq(-66, 33, 33)) +  coord_cartesian(ylim = c(-65, 30)) + xlab("Tanks") + ylab("Laterality index") + ggtitle("Sailfin eye use") + theme_classic()
+
+FORMeye <- ggplot(FORM_tankextra, aes(x=TANK, y=LI.TOT))+ geom_boxplot() + geom_point(color="gray75") + scale_y_continuous(breaks = seq(-66, 33, 33)) +  coord_cartesian(ylim = c(-65, 30)) + xlab("Tanks") + ylab("Laterality index") + ggtitle("Amazon eye use") + theme_classic()
+
+grid.arrange(LATeye, FORMeye, ncol=2)
+
+
+```
+
+
+
+* qqplots: check for normality
+    - while not very tight around best fit, they fall within the CI (points at very end tend not to in many qqplots), therefore we can continue with parametric tests
+
+```{r}
+library(car)
+
+qqp(LAT_rawEX$LI.TOT, "norm", ylab="Laterality index", xlab= "Normal quantiles", main="Sailfin QQ-plot")
+
+qqp(FORM_rawextra$LI.TOT, "norm", ylab="Laterality index", xlab= "Normal quantiles", main="Amazon QQ-plot" )
+
+
+```
+
+
+* Histograms
+    - means don't seem to be too different (which is confirmed in our t-tests), but the spread is different.
+
+```{r}
+library(plyr)
+mu <- ddply(rawextra, "X.U.FEFF.SPP", summarise, grp.mean=mean(LI.TOT))
+
+hist <- ggplot(rawextra, aes(x=LI.TOT)) + geom_histogram(color="black", fill="white") + facet_grid(X.U.FEFF.SPP ~ .) + geom_vline(data = mu, aes(xintercept=grp.mean, color="red"), linetype="dashed")
+
+hist
+
+
+```
+
+
+
+* Deviance from mean of absolute value scores
+
+```{r}
+
+
+
+```
+
+
+
+* Z-scores
+
+
+```{r}
+
+
+
+
+```
+
+
+
+
+
+
+
+
 #### More fish
 
 Data
