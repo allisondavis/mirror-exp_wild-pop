@@ -49,7 +49,7 @@ p_latRE <- prefRE[prefRE$X.U.FEFF.SPP== "Sailfin",]
 #### Final analysis {.tabset .tabset-fade .tabset-pills}
 
 
-Data
+**Data**
 
 ```{r}
 library(curl)
@@ -76,9 +76,13 @@ FORM_tankEX <- tanksEX[tanksEX$X.U.FEFF.SPP == "P.form",]
 "Outliers" determined as those who did not move for >3 consecutive minutes.
   * Sailfin: Rumi (in raw species dataset)
   * Amazons: Cayenne and Gretchen (and  in raw species dataset)
+  
+  
+  
+  
 
 
-New Datasets
+**New Datasets**
 
 ```{r}
 LAT_rawextraP <- LAT_rawEX[-c(16),]
@@ -93,7 +97,16 @@ tankextra2 <- rbind(LAT_tankextraP, FORM_tankextraP)
 
 ```
 
-Variance: overall, not significant (0.50, 95% CI 0.58-3.05) [not any different for greater or less]
+
+
+
+
+
+
+
+
+
+**Variance**: overall, not significant (0.50, 95% CI 0.58-3.05) [not any different for greater or less]
 
 ```{r}
 
@@ -108,7 +121,14 @@ var.test(LAT_rawextraP$LI.TOT, FORM_rawextraP$LI.TOT, alternative = "less", conf
 
 
 
-T- tests using LI instead of total proportion
+
+
+
+
+
+
+
+**T- tests using LI instead of total proportion**
 
 * tank differences: still none
 
@@ -150,7 +170,96 @@ t.test(totLAT2, totFORM2)
 ```
 
 
-Visuals 
+
+
+
+
+
+
+
+
+
+**Repeatability**
+
+* With z-scores of LI data (not sure if this is kosher or useful); results are the same with the raw data
+
+```{r, warning=FALSE}
+library(tidyverse)
+
+LAT_rawextraP <- LAT_rawextraP %>% mutate(z.LIA = c(scale(LI.A)))
+
+LAT_rawextraP <- LAT_rawextraP %>% mutate(z.LIB = c(scale(LI.B)))
+
+FORM_rawextraP <- FORM_rawextraP %>% mutate(z.LIA = c(scale(LI.A)))
+
+FORM_rawextraP <- FORM_rawextraP %>% mutate(z.LIB = c(scale(LI.B)))
+
+
+```
+
+
+```{r, warning=FALSE}
+library(ggpubr)
+
+cor.test(LAT_rawextraP$z.LIA, LAT_rawextraP$z.LIB, method ="pearson")
+
+cor.test(FORM_rawextraP$z.LIA, FORM_rawextraP$z.LIB, method = "pearson")
+
+
+```
+
+
+```{r echo=FALSE, warning=FALSE}
+
+library(gridExtra)
+
+lat_corZ <- ggscatter(LAT_rawextraP, x = "z.LIA", y = "z.LIB", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Eye pref in A tank", ylab = "Eye pref in B tank", title = "Sailfin Z-score correlation")
+
+
+form_corZ <- ggscatter(FORM_rawextraP, x = "z.LIA", y = "z.LIB", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Eye pref in A tank", ylab = "Eye pref in B tank", title = "Amazon Z-score correlation")
+
+grid.arrange(lat_corZ, form_corZ, ncol=2)
+
+```
+
+
+
+* With raw LI data
+
+
+```{r, warning=FALSE}
+library(ggpubr)
+
+cor.test(LAT_rawextraP$LI.A, LAT_rawextraP$LI.B, method ="pearson")
+
+cor.test(FORM_rawextraP$LI.A, FORM_rawextraP$LI.B, method = "pearson")
+
+
+```
+
+
+```{r echo=FALSE, warning=FALSE}
+
+library(gridExtra)
+
+lat_corP <- ggscatter(LAT_rawextraP, x = "LI.A", y = "LI.B", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Eye pref in A tank", ylab = "Eye pref in B tank", title = "Sailfin")
+
+
+form_corP <- ggscatter(FORM_rawextraP, x = "LI.A", y = "LI.B", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Eye pref in A tank", ylab = "Eye pref in B tank", title = "Amazon")
+
+grid.arrange(lat_corP, form_corP, ncol=2)
+
+```
+
+
+
+
+
+
+
+
+
+**Visuals** 
 
 * Overview
 
@@ -220,9 +329,28 @@ qqp(FORM_rawextraP$LI.TOT, "norm", ylab="Laterality index", xlab= "Normal quanti
 library(plyr)
 mu2 <- ddply(rawextra2, "X.U.FEFF.SPP", summarise, grp.mean=mean(LI.TOT))
 
-hist2 <- ggplot(rawextra2, aes(x=LI.TOT)) + geom_histogram(color="black", fill="white") + facet_grid(X.U.FEFF.SPP ~ .) + geom_vline(data = mu2, aes(xintercept=grp.mean, color="red"), linetype="dashed")
+hist2 <- ggplot(rawextra2, aes(x=LI.TOT)) + geom_histogram(color="darkgrey", fill="grey") + facet_grid(X.U.FEFF.SPP ~ .) + geom_vline(data = mu2, aes(xintercept=grp.mean, color="red"), linetype="dashed") + xlab("Laterality index") + ylab("Frequency") + ggtitle("Histogram of Index Scores") + coord_cartesian(ylim = c(0, 4), xlim = c(-20, 25)) + theme_light()
 
-hist2
+hist2 #play around with theme, don't really like classic or light
+
+hist2.1 <- ggplot(rawextra2, aes(x=LI.TOT)) + geom_histogram(color="darkgrey", fill="grey", bins = 5) + facet_grid(X.U.FEFF.SPP ~ .) + geom_vline(data = mu2, aes(xintercept=grp.mean, color="red"), linetype="dashed") + xlab("Laterality index") + ylab("Frequency") + ggtitle("Histogram of Index Scores") + coord_cartesian(ylim = c(0, 15), xlim = c(-20, 25)) + theme_light()
+
+hist2.1
+
+
+hist2.2 <- ggplot(rawextra2, aes(x=LI.TOT)) + geom_histogram(color="darkgrey", fill="grey", bins = 10) + facet_grid(X.U.FEFF.SPP ~ .) + geom_vline(data = mu2, aes(xintercept=grp.mean, color="red"), linetype="dashed") + xlab("Laterality index") + ylab("Frequency") + ggtitle("Histogram of Index Scores") + coord_cartesian(ylim = c(0, 10), xlim = c(-20, 25)) + theme_light()
+
+hist2.2
+
+
+hist2.3 <- ggplot(rawextra2, aes(x=LI.TOT)) + geom_histogram(color="darkgrey", fill="grey", bins = 15) + facet_grid(X.U.FEFF.SPP ~ .) + geom_vline(data = mu2, aes(xintercept=grp.mean, color="red"), linetype="dashed") + xlab("Laterality index") + ylab("Frequency") + ggtitle("Histogram of Index Scores") + coord_cartesian(ylim = c(0, 6), xlim = c(-20, 25)) + theme_light()
+
+hist2.3
+
+
+hist2.4 <- ggplot(rawextra2, aes(x=LI.TOT)) + geom_histogram(color="darkgrey", fill="grey", bins = 20) + facet_grid(X.U.FEFF.SPP ~ .) + geom_vline(data = mu2, aes(xintercept=grp.mean, color="red"), linetype="dashed") + xlab("Laterality index") + ylab("Frequency") + ggtitle("Histogram of Index Scores") + coord_cartesian(ylim = c(0, 6), xlim = c(-20, 25)) + theme_light()
+
+hist2.4
 
 
 ```
@@ -243,9 +371,15 @@ hist2
 
 
 ```{r}
+library(tidyverse)
 
+rawextra2 <- rawextra2 %>% mutate(z.LI = c(scale(LI.TOT)))
 
+histZ <- ggplot(rawextra2, aes(x=z.LI)) + geom_histogram(color="darkgrey", fill="grey", bins = 10) + facet_grid(X.U.FEFF.SPP ~ .) + geom_vline(data = mu2, aes(xintercept=grp.mean, color="red"), linetype="dashed") + xlab("Z-scores of Laterality index") + ylab("Frequency") + ggtitle("Histogram of Z-Scores") + coord_cartesian(ylim = c(0, 15), xlim = c(-2, 2)) + theme_light()
 
+histZ
+
+grid.arrange(hist2.2, histZ, ncol=2)
 
 ```
 
@@ -1122,7 +1256,142 @@ Here I will examine if individuals were consistent with their eye preference acr
 
 I will be using `cor.test(x,y,method="pearson", "kendall", "spearman")`
   * can also add `use="complete.obs"` if I have missing values 
-  
+
+
+With z-scores of LI data (not sure if this is kosher or useful)
+
+```{r}
+library(tidyverse)
+
+LAT_rawextraP <- LAT_rawextraP %>% mutate(z.LIA = c(scale(LI.A)))
+
+LAT_rawextraP <- LAT_rawextraP %>% mutate(z.LIB = c(scale(LI.B)))
+
+FORM_rawextraP <- FORM_rawextraP %>% mutate(z.LIA = c(scale(LI.A)))
+
+FORM_rawextraP <- FORM_rawextraP %>% mutate(z.LIB = c(scale(LI.B)))
+
+
+```
+
+
+```{r}
+library(ggpubr)
+
+cor.test(LAT_rawextraP$z.LIA, LAT_rawextraP$z.LIB, method ="pearson")
+
+cor.test(FORM_rawextraP$z.LIA, FORM_rawextraP$z.LIB, method = "pearson")
+
+
+```
+
+
+```{r echo=FALSE}
+lat_corZ <- ggscatter(LAT_rawextraP, x = "z.LIA", y = "z.LIB", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Eye pref in A tank", ylab = "Eye pref in B tank", title = "Sailfin Z-score correlation")
+
+
+form_corZ <- ggscatter(FORM_rawextraP, x = "z.LIA", y = "z.LIB", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Eye pref in A tank", ylab = "Eye pref in B tank", title = "Amazon Z-score correlation")
+
+grid.arrange(lat_corZ, form_corZ, ncol=2)
+
+```
+
+
+
+With raw LI data
+
+
+```{r}
+library(ggpubr)
+
+cor.test(LAT_rawextraP$LI.A, LAT_rawextraP$LI.B, method ="pearson")
+
+cor.test(FORM_rawextraP$LI.A, FORM_rawextraP$LI.B, method = "pearson")
+
+
+```
+
+
+```{r echo=FALSE}
+lat_corP <- ggscatter(LAT_rawextraP, x = "LI.A", y = "LI.B", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Eye pref in A tank", ylab = "Eye pref in B tank", title = "Sailfin")
+
+
+form_corP <- ggscatter(FORM_rawextraP, x = "LI.A", y = "LI.B", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Eye pref in A tank", ylab = "Eye pref in B tank", title = "Amazon")
+
+grid.arrange(lat_corP, form_corP, ncol=2)
+
+```
+
+
+
+With z-scores of LI data (not sure if this is kosher or useful)
+
+```{r}
+library(tidyverse)
+
+LAT_rawextraP <- LAT_rawextraP %>% mutate(z.LIA = c(scale(LI.A)))
+
+LAT_rawextraP <- LAT_rawextraP %>% mutate(z.LIB = c(scale(LI.B)))
+
+FORM_rawextraP <- FORM_rawextraP %>% mutate(z.LIA = c(scale(LI.A)))
+
+FORM_rawextraP <- FORM_rawextraP %>% mutate(z.LIB = c(scale(LI.B)))
+
+
+```
+
+
+```{r}
+library(ggpubr)
+
+cor.test(LAT_rawextraP$z.LIA, LAT_rawextraP$z.LIB, method ="pearson")
+
+cor.test(FORM_rawextraP$z.LIA, FORM_rawextraP$z.LIB, method = "pearson")
+
+
+```
+
+
+```{r echo=FALSE}
+lat_corZ <- ggscatter(LAT_rawextraP, x = "z.LIA", y = "z.LIB", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Eye pref in A tank", ylab = "Eye pref in B tank", title = "Sailfin Z-score correlation")
+
+
+form_corZ <- ggscatter(FORM_rawextraP, x = "z.LIA", y = "z.LIB", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Eye pref in A tank", ylab = "Eye pref in B tank", title = "Amazon Z-score correlation")
+
+grid.arrange(lat_corZ, form_corZ, ncol=2)
+
+```
+
+
+
+With raw LI data
+
+
+```{r}
+library(ggpubr)
+
+cor.test(LAT_rawextraP$LI.A, LAT_rawextraP$LI.B, method ="pearson")
+
+cor.test(FORM_rawextraP$LI.A, FORM_rawextraP$LI.B, method = "pearson")
+
+
+```
+
+
+```{r echo=FALSE}
+lat_corP <- ggscatter(LAT_rawextraP, x = "LI.A", y = "LI.B", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Eye pref in A tank", ylab = "Eye pref in B tank", title = "Sailfin")
+
+
+form_corP <- ggscatter(FORM_rawextraP, x = "LI.A", y = "LI.B", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Eye pref in A tank", ylab = "Eye pref in B tank", title = "Amazon")
+
+grid.arrange(lat_corP, form_corP, ncol=2)
+
+```
+
+
+
+
+
   
 ```{r echo=FALSE}
 library(ggpubr)
@@ -1173,6 +1442,9 @@ form_cor2 <- ggscatter(FORM_rawextra, x = "LI.A", y = "LI.B", add = "reg.line", 
 grid.arrange(lat_cor2, form_cor2, ncol=2)
 
 ```
+
+
+
 
 
 Will try out a Fischer's exact test to test out repeatability of general preference --pearson's correlation looking for the same degree of bias, but I just want to know if they were left in both cases, regardless of how strong that bias was.
