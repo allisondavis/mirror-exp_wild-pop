@@ -105,6 +105,29 @@ tankextra2 <- rbind(LAT_tankextraP, FORM_tankextraP)
 
 
 
+**Checks for normality**: both K-S tests and Shapiro-Wilk's tests are not signifiant, indicating normal data distribution
+
+See qqplots in visualizations. Below I perform the Kolmogorov-Smirnov (K-S) test and the Shapiro-Wilk's test. If signficant, than it's NOT normal.
+
+```{r}
+
+ks.test(LAT_rawextraP$LI.TOT, "pnorm", mean=mean(LAT_rawextraP$LI.TOT), sd=sd(LAT_rawextraP$LI.TOT))
+
+shapiro.test(LAT_rawextraP$LI.TOT)
+
+
+ks.test(FORM_rawextraP$LI.TOT, "pnorm", mean=mean(FORM_rawextraP$LI.TOT), sd=sd(FORM_rawextraP$LI.TOT))
+
+shapiro.test(FORM_rawextraP$LI.TOT)
+
+
+
+
+
+```
+
+
+
 
 **Variance**: overall, not significant (0.50, 95% CI 0.58-3.05) [not any different for greater or less]
 
