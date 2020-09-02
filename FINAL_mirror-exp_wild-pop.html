@@ -245,6 +245,34 @@ FORM_tankextraP &lt;- FORM_tankEX[-c(5,6,21,22),]
 
 rawextra2 &lt;- rbind(LAT_rawextraP, FORM_rawextraP)
 tankextra2 &lt;- rbind(LAT_tankextraP, FORM_tankextraP)</code></pre>
+<p><strong>Checks for normality</strong>: both K-S tests and Shapiro-Wilk’s tests are not signifiant, indicating normal data distribution</p>
+<p>See qqplots in visualizations. Below I perform the Kolmogorov-Smirnov (K-S) test and the Shapiro-Wilk’s test. If signficant, than it’s NOT normal.</p>
+<pre class="r"><code>ks.test(LAT_rawextraP$LI.TOT, &quot;pnorm&quot;, mean=mean(LAT_rawextraP$LI.TOT), sd=sd(LAT_rawextraP$LI.TOT))</code></pre>
+<pre><code>## 
+##  One-sample Kolmogorov-Smirnov test
+## 
+## data:  LAT_rawextraP$LI.TOT
+## D = 0.16364, p-value = 0.4909
+## alternative hypothesis: two-sided</code></pre>
+<pre class="r"><code>shapiro.test(LAT_rawextraP$LI.TOT)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  LAT_rawextraP$LI.TOT
+## W = 0.94654, p-value = 0.2277</code></pre>
+<pre class="r"><code>ks.test(FORM_rawextraP$LI.TOT, &quot;pnorm&quot;, mean=mean(FORM_rawextraP$LI.TOT), sd=sd(FORM_rawextraP$LI.TOT))</code></pre>
+<pre><code>## 
+##  One-sample Kolmogorov-Smirnov test
+## 
+## data:  FORM_rawextraP$LI.TOT
+## D = 0.15466, p-value = 0.5373
+## alternative hypothesis: two-sided</code></pre>
+<pre class="r"><code>shapiro.test(FORM_rawextraP$LI.TOT)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  FORM_rawextraP$LI.TOT
+## W = 0.94617, p-value = 0.2053</code></pre>
 <p><strong>Variance</strong>: overall, not significant (0.50, 95% CI 0.58-3.05) [not any different for greater or less]</p>
 <pre class="r"><code>var.test(LAT_rawextraP$LI.TOT, FORM_rawextraP$LI.TOT, alternative = &quot;two.sided&quot;, conf.level = 0.95)</code></pre>
 <pre><code>## 
