@@ -68,6 +68,26 @@ tanksEX <- read.csv(tanksEX, header = TRUE, sep = ",", stringsAsFactors = TRUE)
 LAT_tankEX <- tanksEX[tanksEX$X.U.FEFF.SPP == "P.lat",]
 FORM_tankEX <- tanksEX[tanksEX$X.U.FEFF.SPP == "P.form",]
 
+
+#DATA ANALYSIS WITH RAW DATA
+
+t.test(LAT_rawEX$LI.A, LAT_rawEX$LI.B, paired = TRUE, alternative = "two.sided") #NO TANK DIFFERENCE
+
+t.test(FORM_rawEX$LI.A, FORM_rawEX$LI.B, paired = TRUE, alternative = "two.sided") #NO TANK DIFFERENCE
+
+t.test(LAT_rawEX$LI.TOT, mu=0, alternative = "two.sided") #NO EYE BIAS
+
+t.test(FORM_rawEX$LI.TOT, mu=0, alternative = "two.sided") #NO EYE BIAS
+
+t.test(LAT_rawextraP$LI.TOT, FORM_rawextraP$LI.TOT) #NO MEAN DIFFERENCE
+
+totLAT3 <- abs(LAT_rawEX$LI.TOT)
+totFORM3 <- abs(FORM_rawEX$LI.TOT)
+
+t.test(totLAT3, totFORM3) #NO DIFFERENCE IN OVERAL LATERALITY
+
+var.test(LAT_rawEX$LI.TOT, FORM_rawEX$LI.TOT, alternative = "two.sided", conf.level = 0.95) #NO DIFFERENCE IN VARIANCE
+
 ```
 
 
