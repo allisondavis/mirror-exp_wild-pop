@@ -71,6 +71,15 @@ FORM_tankEX <- tanksEX[tanksEX$X.U.FEFF.SPP == "P.form",]
 
 #DATA ANALYSIS WITH RAW DATA
 
+ks.test(LAT_rawEX$LI.TOT, "pnorm", mean=mean(LAT_rawEX$LI.TOT), sd=sd(LAT_rawEX$LI.TOT)) #NOT SIG (NORMAL)
+
+shapiro.test(LAT_rawEX$LI.TOT) #SIG (NOT NORMAL?)
+
+
+ks.test(FORM_rawEX$LI.TOT, "pnorm", mean=mean(FORM_rawEX$LI.TOT), sd=sd(FORM_rawEX$LI.TOT)) #NOT SIG (NORMAL)
+
+shapiro.test(FORM_rawEX$LI.TOT) #SIG (NOT NORMAL?)
+
 t.test(LAT_rawEX$LI.A, LAT_rawEX$LI.B, paired = TRUE, alternative = "two.sided") #NO TANK DIFFERENCE
 
 t.test(FORM_rawEX$LI.A, FORM_rawEX$LI.B, paired = TRUE, alternative = "two.sided") #NO TANK DIFFERENCE
@@ -79,7 +88,22 @@ t.test(LAT_rawEX$LI.TOT, mu=0, alternative = "two.sided") #NO EYE BIAS
 
 t.test(FORM_rawEX$LI.TOT, mu=0, alternative = "two.sided") #NO EYE BIAS
 
-t.test(LAT_rawextraP$LI.TOT, FORM_rawextraP$LI.TOT) #NO MEAN DIFFERENCE
+library(ggpubr)
+
+cor.test(LAT_rawEX$LI.A, LAT_rawEX$LI.B, method ="pearson") #NO SIG CORRELATION
+
+cor.test(FORM_rawEX$LI.A, FORM_rawEX$LI.B, method = "pearson") #NO SIG CORRELATION
+
+library(gridExtra)
+
+lat_corP2 <- ggscatter(LAT_rawEX, x = "LI.A", y = "LI.B", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Eye pref in A tank", ylab = "Eye pref in B tank", title = "Sailfin")
+
+
+form_corP2 <- ggscatter(FORM_rawEX, x = "LI.A", y = "LI.B", add = "reg.line", conf.int = TRUE, cor.coef = TRUE, cor.method = "pearson", xlab = "Eye pref in A tank", ylab = "Eye pref in B tank", title = "Amazon")
+
+grid.arrange(lat_corP2, form_corP2, ncol=2)
+
+t.test(LAT_rawEX$LI.TOT, FORM_rawEX$LI.TOT) #NO MEAN DIFFERENCE
 
 totLAT3 <- abs(LAT_rawEX$LI.TOT)
 totFORM3 <- abs(FORM_rawEX$LI.TOT)
@@ -312,9 +336,23 @@ library(ggsignif)
 library(gridExtra)
 library(ggthemes)
 
-orig3 <- ggplot(rawEX, aes(x=X.U.FEFF.SPP, y=LI.TOT)) + geom_boxplot() + geom_point(color="gray75") + xlab("Species") + ylab("Laterality index") + ggtitle("Original Data") + theme_classic()
+library(plyr)
+
+rawEX3 <- rawEX
+
+rawEX3$X.U.FEFF.SPP <- revalue(rawEX3$X.U.FEFF.SPP, c("P.lat"="Sailfin"))
+
+rawEX3$X.U.FEFF.SPP <- revalue(rawEX3$X.U.FEFF.SPP, c("P.form"="Amazon"))
+
+min(rawEX3$LI.TOT) #-48.71795
+max(rawEX3$LI.TOT) #41.13208
+
+
+orig3 <- ggplot(rawEX3, aes(x=X.U.FEFF.SPP, y=LI.TOT)) + geom_boxplot(coef=1.5, outlier.shape = NA) + geom_point(color="gray75", size=2, alpha=0.5) + scale_y_continuous(breaks = seq(-50, 50, 25)) +  coord_cartesian(ylim = c(-50, 50))  + ylab("Laterality index") + xlab("") +theme_classic() 
 
 orig3
+
+#DO THIS FOR NEW FIG! ggsave(rem_out3, filename = "Figure_5.tiff", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
 
 ```
 
@@ -348,6 +386,25 @@ ggsave(rem_out3, filename = "Figure_5.tiff", bg="transparent", width = 180, heig
 
 ```{r}
 library(plyr)
+
+#WITH RAW DATA
+
+TANKS2 <- tanksEX
+
+TANKS2$X.U.FEFF.SPP <- revalue(TANKS2$X.U.FEFF.SPP, c("P.lat"="Sailfin"))
+
+TANKS2$X.U.FEFF.SPP <- revalue(TANKS2$X.U.FEFF.SPP, c("P.form"="Amazon"))
+
+min(TANKS2$LI.TOT) #-97
+max(TANKS2$LI.TOT) #64
+
+EYES <- ggplot(TANKS2, aes(x=TANK, y=LI.TOT))+ geom_boxplot(coef=1.5, outlier.shape = NA) + facet_wrap(~X.U.FEFF.SPP) + geom_point(color="gray75", size=2, alpha=0.5) + scale_y_continuous(breaks = seq(-100, 75, 25)) +  coord_cartesian(ylim = c(-100, 75)) + xlab("Tanks") + ylab("Laterality index") + theme_classic()
+
+EYES
+#DO FOR NEW FIG! ggsave(EYE, filename = "Figure_3.tiff", bg="transparent", width = 180, height = 120, units = "mm", dpi=300)
+
+
+#outlier removed data
 
 TANKEXTRA <- tankextra2
 TANKEXTRA$X.U.FEFF.SPP <- revalue(TANKEXTRA$X.U.FEFF.SPP, c("P.lat"="Sailfin"))
@@ -395,6 +452,18 @@ qqp(FORM_rawextraP$LI.TOT, "norm", ylab="Laterality index", xlab= "Normal quanti
 
 ```{r}
 library(plyr)
+
+#raw data
+mu4 <- ddply(rawEX3, "X.U.FEFF.SPP", summarise, grp.mean=mean(LI.TOT))
+
+hist2.3.1 <- ggplot(rawEX3, aes(x=LI.TOT)) + geom_histogram(color="darkgrey", fill="grey", bins = 15) + facet_grid(X.U.FEFF.SPP ~ .) + geom_vline(data = mu4, aes(xintercept=grp.mean, color="red"), linetype="dashed") + xlab("Laterality index") + ylab("Frequency") + coord_cartesian(ylim = c(0, 6), xlim = c(-50, 50)) + theme_light() + theme(legend.position = "none")
+
+hist2.3.1
+#DO FOR NEW FIG! ggsave(hist2.3, filename = "Figure_4.tiff", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
+
+
+
+#outlier removed data
 mu2 <- ddply(rawextra2, "X.U.FEFF.SPP", summarise, grp.mean=mean(LI.TOT))
 
 hist2 <- ggplot(rawextra2, aes(x=LI.TOT)) + geom_histogram(color="darkgrey", fill="grey") + facet_grid(X.U.FEFF.SPP ~ .) + geom_vline(data = mu2, aes(xintercept=grp.mean, color="red"), linetype="dashed") + xlab("Laterality index") + ylab("Frequency") + ggtitle("Histogram of Index Scores") + coord_cartesian(ylim = c(0, 4), xlim = c(-20, 25)) + theme_light()
