@@ -348,11 +348,11 @@ min(rawEX3$LI.TOT) #-48.71795
 max(rawEX3$LI.TOT) #41.13208
 
 
-orig3 <- ggplot(rawEX3, aes(x=X.U.FEFF.SPP, y=LI.TOT)) + geom_boxplot(coef=1.5, outlier.shape = NA) + geom_point(color="gray75", size=2, alpha=0.5) + scale_y_continuous(breaks = seq(-50, 50, 25)) +  coord_cartesian(ylim = c(-50, 50))  + ylab("Laterality index") + xlab("") +theme_classic() 
+orig3 <- ggplot(rawEX3, aes(x=X.U.FEFF.SPP, y=LI.TOT)) + geom_boxplot(coef=1.5) + geom_point(color="gray75", size=2, alpha=0.5) + scale_y_continuous(breaks = seq(-50, 50, 25)) +  coord_cartesian(ylim = c(-50, 50))  + ylab("Laterality index") + xlab("") +theme_classic() 
 
 orig3
 
-#DO THIS FOR NEW FIG! ggsave(rem_out3, filename = "Figure_5.tiff", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
+ggsave(orig3, filename = "Figure_4.tiff", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
 
 ```
 
@@ -398,10 +398,10 @@ TANKS2$X.U.FEFF.SPP <- revalue(TANKS2$X.U.FEFF.SPP, c("P.form"="Amazon"))
 min(TANKS2$LI.TOT) #-97
 max(TANKS2$LI.TOT) #64
 
-EYES <- ggplot(TANKS2, aes(x=TANK, y=LI.TOT))+ geom_boxplot(coef=1.5, outlier.shape = NA) + facet_wrap(~X.U.FEFF.SPP) + geom_point(color="gray75", size=2, alpha=0.5) + scale_y_continuous(breaks = seq(-100, 75, 25)) +  coord_cartesian(ylim = c(-100, 75)) + xlab("Tanks") + ylab("Laterality index") + theme_classic()
+EYES <- ggplot(TANKS2, aes(x=TANK, y=LI.TOT))+ geom_boxplot(coef=1.5) + facet_wrap(~X.U.FEFF.SPP) + geom_point(color="gray75", size=2, alpha=0.5) + scale_y_continuous(breaks = seq(-100, 75, 25)) +  coord_cartesian(ylim = c(-100, 75)) + xlab("Tanks") + ylab("Laterality index") + theme_classic()
 
 EYES
-#DO FOR NEW FIG! ggsave(EYE, filename = "Figure_3.tiff", bg="transparent", width = 180, height = 120, units = "mm", dpi=300)
+ggsave(EYES, filename = "Figure_2.tiff", bg="transparent", width = 180, height = 120, units = "mm", dpi=300)
 
 
 #outlier removed data
@@ -456,10 +456,10 @@ library(plyr)
 #raw data
 mu4 <- ddply(rawEX3, "X.U.FEFF.SPP", summarise, grp.mean=mean(LI.TOT))
 
-hist2.3.1 <- ggplot(rawEX3, aes(x=LI.TOT)) + geom_histogram(color="darkgrey", fill="grey", bins = 15) + facet_grid(X.U.FEFF.SPP ~ .) + geom_vline(data = mu4, aes(xintercept=grp.mean, color="red"), linetype="dashed") + xlab("Laterality index") + ylab("Frequency") + coord_cartesian(ylim = c(0, 6), xlim = c(-50, 50)) + theme_light() + theme(legend.position = "none")
+hist2.3.1 <- ggplot(rawEX3, aes(x=LI.TOT)) + geom_histogram(color="darkgrey", fill="grey", bins = 15) + facet_grid(X.U.FEFF.SPP ~ .) + geom_vline(data = mu4, aes(xintercept=grp.mean, color="red"), linetype="dashed") + xlab("Laterality index") + ylab("Frequency") + coord_cartesian(ylim = c(0, 12), xlim = c(-50, 50)) + theme_light() + theme(legend.position = "none")
 
 hist2.3.1
-#DO FOR NEW FIG! ggsave(hist2.3, filename = "Figure_4.tiff", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
+ggsave(hist2.3.1, filename = "Figure_3.tiff", bg="transparent", width = 180, height = 120, units = "mm", dpi = 300)
 
 
 
